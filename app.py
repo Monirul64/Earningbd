@@ -143,7 +143,9 @@ class ResetForm(FlaskForm):
     submit = SubmitField("পাসওয়ার্ড পরিবর্তন করুন")
 
 class PurchaseForm(FlaskForm):
-    package_price = SelectField("প্রজেক্ট প্যাকেজ", choices=[(price, f"৳{int(price):,} — প্রতি অনুমোদিত টাস্ক ৳{reward}") for price, reward in [("500", "1"), ("1000", "2"), ("2500", "3"), ("5000", "5"), ("10000", "8"), ("15000", "10"), ("20000", "15")]], validators=[DataRequired()])
+    package_price = SelectField("প্রজেক্ট প্যাকেজ", choices=[(price, f"৳{int(price):,} — প্রতি অনুমোদিত টাস্ক ৳{reward}") 
+                    for price, reward in [("500", "50"), ("1000", "100"), ("2500", "300"), ("5000", "700"), ("10000", "1000"), ("15000", "1400"),
+                                       ("20000", "2000")]], validators=[DataRequired()])
     method = SelectField("পেমেন্ট মাধ্যম", choices=[("bKash","bKash"),("Nagad","Nagad"),("Rocket","Rocket")], validators=[DataRequired()])
     reference = StringField("Transaction ID / রেফারেন্স", validators=[DataRequired(), Length(min=4, max=120)])
     submit = SubmitField("কেনার অনুরোধ দিন")
