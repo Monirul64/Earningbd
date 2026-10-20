@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<div class="pagehead"><h1>কাস্টমার তালিকা</h1></div><div class="tablewrap"><table><tr><th>ID</th><th>ইউজারনেম</th><th>ইমেইল</th><th>যোগদান</th></tr>{% for u in users %}<tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.created_at.strftime("%d-%m-%Y") }}</td></tr>{% endfor %}</table></div>{% endblock %}
