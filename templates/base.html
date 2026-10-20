@@ -1,3 +1,113 @@
-<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}TaskGold{% endblock %}</title><link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}"></head><body>
-<header><a class="brand" href="{{ url_for('index') }}">◆ TaskGold</a><nav><a href="{{ url_for('index') }}">হোম</a>{% if current_user.is_authenticated %}<a href="{{ url_for('dashboard') }}">ড্যাশবোর্ড</a><a href="{{ url_for('tasks') }}">আজকের কাজ</a><a href="{{ url_for('wallet') }}">ওয়ালেট</a><a href="{{ url_for('withdraw') }}">উত্তোলন</a>{% if current_user.is_admin %}<a href="{{ url_for('admin_home') }}">Admin</a>{% endif %}<form method="post" action="{{ url_for('logout') }}" class="navform"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button>লগআউট</button></form>{% else %}<a href="{{ url_for('login') }}">লগইন</a><a class="navcta" href="{{ url_for('signup') }}">সাইন আপ</a>{% endif %}</nav></header>
-<main class="container">{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}{% block content %}{% endblock %}</main><footer>TaskGold · কাজের পুরস্কার বাস্তব অর্থায়ন ও যাচাইয়ের ওপর নির্ভরশীল।</footer></body></html>
+
+<!doctype html>
+<html lang="bn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}TaskGold{% endblock %}</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <!-- Header & Navigation -->
+    <header>
+        <a class="brand" href="{{ url_for('index') }}">
+            ◆ TaskGold
+        </a>
+
+        <nav>
+            <a href="{{ url_for('index') }}">হোম</a>
+
+            {% if current_user.is_authenticated %}
+
+                <a href="{{ url_for('dashboard') }}">
+                    ড্যাশবোর্ড
+                </a>
+
+                <a href="{{ url_for('tasks') }}">
+                    আজকের কাজ
+                </a>
+
+                <a href="{{ url_for('wallet') }}">
+                    ওয়ালেট
+                </a>
+
+                <a href="{{ url_for('withdraw') }}">
+                    উত্তোলন
+                </a>
+
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin_home') }}">
+                        Admin
+                    </a>
+                {% endif %}
+
+                <!-- Logout Form -->
+                <form
+                    method="post"
+                    action="{{ url_for('logout') }}"
+                    class="navform"
+                >
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{ csrf_token() }}"
+                    >
+
+                    <button type="submit">
+                        লগআউট
+                    </button>
+                </form>
+
+            {% else %}
+
+                <a href="{{ url_for('login') }}">
+                    লগইন
+                </a>
+
+                <a
+                    class="navcta"
+                    href="{{ url_for('signup') }}"
+                >
+                    সাইন আপ
+                </a>
+
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% for category, message in messages %}
+
+                <div class="flash {{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+        <!-- Page Content Block -->
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        TaskGold · কাজের পুরস্কার বাস্তব অর্থায়ন ও যাচাইয়ের ওপর নির্ভরশীল।
+    </footer>
+
+</body>
+</html>
