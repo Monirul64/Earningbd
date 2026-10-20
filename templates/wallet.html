@@ -1,1 +1,10 @@
-{% extends "base.html" %}{% block content %}<div class="pagehead"><h1>ওয়ালেট</h1><h2>{{ balance|money }}</h2><a class="btn" href="{{ url_for('withdraw') }}">উত্তোলনের অনুরোধ</a></div><div class="tablewrap"><table><tr><th>বিবরণ</th><th>পরিমাণ</th><th>তারিখ</th></tr>{% for e in entries %}<tr><td>{{ e.description }}</td><td>{{ e.amount|money }}</td><td>{{ e.created_at.strftime("%d-%m-%Y") }}</td></tr>{% else %}<tr><td colspan="3">লেনদেন নেই।</td></tr>{% endfor %}</table></div><div class="sectionhead"><h2>উত্তোলনের ইতিহাস</h2></div><div class="tablewrap"><table><tr><th>পরিমাণ</th><th>মাধ্যম</th><th>অবস্থা</th></tr>{% for p in payouts %}<tr><td>{{ p.amount|money }}</td><td>{{ p.method }}</td><td>{{ {"pending":"অপেক্ষমাণ","paid":"পেমেন্ট সম্পন্ন","rejected":"বাতিল"}.get(p.status,p.status) }}</td></tr>{% else %}<tr><td colspan="3">অনুরোধ নেই।</td></tr>{% endfor %}</table></div>{% endblock %}
+{% extends "base.html" %}{% block content %}<div class="pagehead">
+  <h1>ওয়ালেট</h1><h2>{{ balance|money }}</h2>
+  <a class="btn" href="{{ url_for('withdraw') }}">উত্তোলনের অনুরোধ</a>
+</div><div class="tablewrap"><table><tr><th>বিবরণ</th><th>পরিমাণ</th><th>তারিখ</th></tr>{% for e in entries %}<tr>
+  <td>{{ e.description }}</td><td>{{ e.amount|money }}</td><td>{{ e.created_at.strftime("%d-%m-%Y") }}</td>
+</tr>{% else %}<tr><td colspan="3">লেনদেন নেই।</td></tr>{% endfor %}</table></div><div class="sectionhead">
+  <h2>উত্তোলনের ইতিহাস</h2></div><div class="tablewrap"><table><tr><th>পরিমাণ</th><th>মাধ্যম</th><th>অবস্থা</th>
+  </tr>{% for p in payouts %}<tr><td>{{ p.amount|money }}</td><td>{{ p.method }}</td>
+    <td>{{ {"pending":"অপেক্ষমাণ","paid":"পেমেন্ট সম্পন্ন","rejected":"বাতিল"}.get(p.status,p.status) }}</td>
+  </tr>{% else %}<tr><td colspan="3">অনুরোধ নেই।</td></tr>{% endfor %}</table></div>{% endblock %}
