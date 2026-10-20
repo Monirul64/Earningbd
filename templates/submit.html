@@ -1,1 +1,40 @@
-{% extends "base.html" %}{% block content %}<section class="formwrap"><h1>{{ task.title }}</h1><p>{{ task.description }}</p><form class="formcard" method="post">{{ form.hidden_tag() }}<label>{{ form.proof.label }}{{ form.proof(class_="input textarea",rows="5") }}</label>{{ form.submit(class_="btn full") }}</form></section>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="formwrap">
+
+    <!-- Task Title -->
+    <h1>{{ task.title }}</h1>
+
+    <!-- Task Description -->
+    <p>
+        {{ task.description }}
+    </p>
+
+    <!-- Task Submission Form -->
+    <form class="formcard" method="post">
+
+        {{ form.hidden_tag() }}
+
+        <!-- Proof Field -->
+        <label>
+
+            {{ form.proof.label }}
+
+            {{ form.proof(
+                class_="input textarea",
+                rows="5"
+            ) }}
+
+        </label>
+
+        <!-- Submit Button -->
+        {{ form.submit(class_="btn full") }}
+
+    </form>
+
+</section>
+
+{% endblock %}
