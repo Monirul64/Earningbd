@@ -1,1 +1,63 @@
-{% extends "base.html" %}{% block content %}<section class="formwrap"><span class="eyebrow">CREATE ACCOUNT</span><h1>সাইন আপ</h1><form class="formcard" method="post">{{ form.hidden_tag() }}{% for f in [form.username,form.email,form.password,form.confirm] %}<label>{{ f.label }}{{ f(class_="input") }}{% for e in f.errors %}<small class="error">{{ e }}</small>{% endfor %}</label>{% endfor %}{{ form.submit(class_="btn full") }}</form><p>অ্যাকাউন্ট আছে? <a href="{{ url_for('login') }}">লগইন</a></p></section>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="formwrap">
+
+    <!-- Page Header -->
+    <span class="eyebrow">
+        CREATE ACCOUNT
+    </span>
+
+    <h1>সাইন আপ</h1>
+
+    <!-- Signup Form -->
+    <form class="formcard" method="post">
+
+        {{ form.hidden_tag() }}
+
+        <!-- Form Fields -->
+        {% for f in [
+            form.username,
+            form.email,
+            form.password,
+            form.confirm
+        ] %}
+
+            <label>
+
+                {{ f.label }}
+
+                {{ f(class_="input") }}
+
+                <!-- Validation Errors -->
+                {% for e in f.errors %}
+
+                    <small class="error">
+                        {{ e }}
+                    </small>
+
+                {% endfor %}
+
+            </label>
+
+        {% endfor %}
+
+        <!-- Submit Button -->
+        {{ form.submit(class_="btn full") }}
+
+    </form>
+
+    <!-- Login Link -->
+    <p>
+        অ্যাকাউন্ট আছে?
+
+        <a href="{{ url_for('login') }}">
+            লগইন
+        </a>
+    </p>
+
+</section>
+
+{% endblock %}
