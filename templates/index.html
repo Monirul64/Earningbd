@@ -1,1 +1,107 @@
-{% extends "base.html" %}{% block content %}<section class="hero"><span class="eyebrow">TASKS · PROJECT ACCESS</span><h1>কাজ সম্পন্ন করুন,<br><em>স্বচ্ছভাবে অগ্রসর হন।</em></h1><p>প্রজেক্ট কেনার অনুরোধ, প্রতিদিনের নির্ধারিত কাজ, কাজের প্রমাণ, ও Admin যাচাই—সব এক জায়গায়। কোনো আয়ের নিশ্চয়তা দেওয়া হয় না।</p><div class="actions"><a class="btn" href="{{ url_for('signup') }}">অ্যাকাউন্ট খুলুন</a><a class="btn secondary" href="{{ url_for('buy') if current_user.is_authenticated else url_for('login') }}">প্রজেক্ট দেখুন</a></div></section><div class="grid"><div class="card"><span class="eyebrow">PROJECT PRICE</span><h2>৳৫০০–৳২০,০০০</h2><p>Admin যাচাইয়ের পর অ্যাক্সেস চালু হবে।</p></div><div class="card"><span class="eyebrow">DURATION</span><h2>{{ project_days }} দিন</h2><p>সক্রিয় হওয়ার দিন থেকে গণনা।</p></div><div class="card"><span class="eyebrow">DAILY TASKS</span><h2>{{ tasks_per_day }}টি</h2><p>প্রতিদিন সর্বোচ্চ পাঁচটি নির্ধারিত কাজের স্লট।</p></div></div><div class="notice"><strong>দয়া করে পড়ুন</strong><p>প্রজেক্ট প্যাকেজ ৳৫০০ থেকে ৳২০,০০০। টাস্কের রেট প্যাকেজ অনুযায়ী উদাহরণ হিসেবে নির্ধারিত; কোনো নির্দিষ্ট আয় নিশ্চিত নয়। পুরস্কার দেওয়ার আগে প্রকৃত আয়ের উৎস ও পর্যাপ্ত তহবিল নিশ্চিত করা জরুরি।</p></div>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+
+    <span class="eyebrow">
+        TASKS · PROJECT ACCESS
+    </span>
+
+    <h1>
+        কাজ সম্পন্ন করুন,<br>
+        <em>স্বচ্ছভাবে অগ্রসর হন।</em>
+    </h1>
+
+    <p>
+        প্রজেক্ট কেনার অনুরোধ, প্রতিদিনের নির্ধারিত কাজ,
+        কাজের প্রমাণ, ও Admin যাচাই—সব এক জায়গায়।
+        কোনো আয়ের নিশ্চয়তা দেওয়া হয় না।
+    </p>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+
+        <a class="btn" href="{{ url_for('signup') }}">
+            অ্যাকাউন্ট খুলুন
+        </a>
+
+        <a
+            class="btn secondary"
+            href="{{ url_for('buy') if current_user.is_authenticated else url_for('login') }}"
+        >
+            প্রজেক্ট দেখুন
+        </a>
+
+    </div>
+
+</section>
+
+<!-- Project Information Cards -->
+<div class="grid">
+
+    <!-- Project Price -->
+    <div class="card">
+
+        <span class="eyebrow">
+            PROJECT PRICE
+        </span>
+
+        <h2>৳৫০০–৳২০,০০০</h2>
+
+        <p>
+            Admin যাচাইয়ের পর অ্যাক্সেস চালু হবে।
+        </p>
+
+    </div>
+
+    <!-- Project Duration -->
+    <div class="card">
+
+        <span class="eyebrow">
+            DURATION
+        </span>
+
+        <h2>{{ project_days }} দিন</h2>
+
+        <p>
+            সক্রিয় হওয়ার দিন থেকে গণনা।
+        </p>
+
+    </div>
+
+    <!-- Daily Tasks -->
+    <div class="card">
+
+        <span class="eyebrow">
+            DAILY TASKS
+        </span>
+
+        <h2>{{ tasks_per_day }}টি</h2>
+
+        <p>
+            প্রতিদিন সর্বোচ্চ পাঁচটি নির্ধারিত কাজের স্লট।
+        </p>
+
+    </div>
+
+</div>
+
+<!-- Important Notice -->
+<div class="notice">
+
+    <strong>দয়া করে পড়ুন</strong>
+
+    <p>
+        প্রজেক্ট প্যাকেজ ৳৫০০ থেকে ৳২০,০০০।
+        টাস্কের রেট প্যাকেজ অনুযায়ী উদাহরণ হিসেবে
+        নির্ধারিত; কোনো নির্দিষ্ট আয় নিশ্চিত নয়।
+        পুরস্কার দেওয়ার আগে প্রকৃত আয়ের উৎস ও
+        পর্যাপ্ত তহবিল নিশ্চিত করা জরুরি।
+    </p>
+
+</div>
+
+{% endblock %}
