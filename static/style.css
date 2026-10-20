@@ -1,2 +1,691 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;700;800&display=swap');
-:root{--bg:#090a0d;--panel:#14161b;--line:#30323a;--gold:#e9bd59;--gold2:#ffe4a1;--text:#f4f2ed;--muted:#a7a8b0;--green:#6ce0a4;--red:#ff7b82}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% -10%,#302515,transparent 42%),var(--bg);color:var(--text);font-family:'Hind Siliguri',sans-serif;line-height:1.6}a{color:var(--gold);text-decoration:none}a:hover{color:var(--gold2)}header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px clamp(16px,5vw,70px);border-bottom:1px solid var(--line);position:sticky;top:0;background:#0b0c0eeb;backdrop-filter:blur(10px);z-index:4}.brand{font:800 22px Inter,sans-serif;color:var(--gold)}nav{display:flex;gap:15px;align-items:center;flex-wrap:wrap;font-size:14px}nav a,nav button{color:#ddd}.navform{margin:0}.navform button{border:0;background:none;font:inherit;cursor:pointer}.navcta{border:1px solid var(--gold);border-radius:8px;padding:5px 11px}.container{width:min(1100px,calc(100% - 32px));margin:auto;min-height:72vh}.hero{padding:90px 0 65px;max-width:790px}.eyebrow{font:700 11px Inter,sans-serif;letter-spacing:2px;color:var(--gold)}h1{font-size:clamp(32px,5vw,52px);line-height:1.22;margin:14px 0}h1 em{color:var(--gold);font-style:normal}.hero p,.muted{color:var(--muted)}.hero p{font-size:18px;max-width:680px}.actions{display:flex;gap:12px;margin-top:25px}.btn{display:inline-flex;justify-content:center;align-items:center;background:linear-gradient(130deg,var(--gold2),var(--gold));border:1px solid var(--gold);border-radius:8px;padding:10px 18px;color:#17130a;font:600 14px 'Hind Siliguri',sans-serif;cursor:pointer}.btn:hover{color:#17130a;filter:brightness(1.08)}.btn.secondary{background:transparent;color:var(--gold)}.btn.small{padding:5px 10px;font-size:12px}.btn.full{width:100%;margin-top:7px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:22px 0}.card,.formcard,.pricebox,.notice{border:1px solid var(--line);border-radius:14px;padding:22px;background:linear-gradient(145deg,#181a20,#111216)}.card h2{font:700 28px Inter,sans-serif;color:var(--gold)}.card p,.notice p{color:var(--muted)}.notice{margin:30px 0}.notice strong{color:var(--gold)}.formwrap{max-width:480px;margin:48px auto 70px}.formwrap h1{font-size:36px}.formcard{display:grid;gap:14px;margin:20px 0}.formcard label{display:grid;gap:6px;font-size:14px}.input{width:100%;min-height:42px;border:1px solid #3b3d45;border-radius:8px;padding:10px 12px;background:#0b0c10;color:var(--text);font:14px 'Hind Siliguri',sans-serif}.input:focus{outline:1px solid var(--gold);border-color:var(--gold)}.textarea{resize:vertical}.error{color:var(--red)}.flash{padding:12px 15px;margin:15px 0;border-radius:8px;border:1px solid #355b42;background:#1b2820}.flash.error{background:#2b191b;border-color:#67353a}.pricebox{margin:20px 0;color:var(--muted)}.pricebox strong{display:block;font:700 28px Inter,sans-serif;color:var(--gold)}.pagehead{padding:38px 0 10px}.pagehead h1{font-size:clamp(30px,4vw,42px)}.sectionhead{margin:30px 0 10px}.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:20px 0 40px}table{width:100%;border-collapse:collapse;min-width:600px;background:#111216}th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top}th{color:var(--gold);background:#191b20}tr:last-child td{border-bottom:0}.status{font-size:12px;color:var(--gold)}.inline{display:flex;gap:6px;min-width:260px}.inline .input{min-width:85px}.proof{max-width:280px;overflow-wrap:anywhere}.empty{padding:25px;color:var(--muted);border:1px dashed var(--line);border-radius:12px}footer{text-align:center;color:#777982;border-top:1px solid var(--line);padding:25px 12px;font-size:12px;margin-top:50px}@media(max-width:750px){header{align-items:flex-start;flex-direction:column;gap:9px}nav{gap:10px}.grid{grid-template-columns:1fr 1fr}.hero{padding-top:50px}}@media(max-width:520px){.grid{grid-template-columns:1fr}.hero p{font-size:16px}.card,.formcard{padding:17px}}
+
+/* =========================
+   1. ROOT & GLOBAL
+========================= */
+:root {
+    --bg: #090a0d;
+    --panel: #14161b;
+    --panel-light: #1b1d24;
+    --line: #30323a;
+
+    --gold: #e9bd59;
+    --gold2: #ffe4a1;
+
+    --text: #f4f2ed;
+    --muted: #a7a8b0;
+
+    --green: #6ce0a4;
+    --red: #ff7b82;
+
+    --radius: 12px;
+    --shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+    --transition: 0.2s ease;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(
+            ellipse at 75% -10%,
+            #302515 0%,
+            transparent 42%
+        ),
+        var(--bg);
+    color: var(--text);
+    font-family: 'Hind Siliguri', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: var(--gold);
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+a:hover {
+    color: var(--gold2);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+/* =========================
+   2. HEADER & NAVIGATION
+========================= */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 16px clamp(16px, 5vw, 70px);
+
+    border-bottom: 1px solid var(--line);
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    background: rgba(11, 12, 14, 0.93);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.brand {
+    font: 800 22px Inter, sans-serif;
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+nav a,
+nav button {
+    color: #dddddf;
+    transition: color var(--transition);
+}
+
+nav a:hover,
+nav button:hover {
+    color: var(--gold);
+}
+
+.navform {
+    margin: 0;
+}
+
+.navform button {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+.navcta {
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 5px 11px;
+}
+
+/* =========================
+   3. MAIN CONTAINER
+========================= */
+.container {
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    min-height: 72vh;
+}
+
+/* =========================
+   4. HERO SECTION
+========================= */
+.hero {
+    padding: 90px 0 65px;
+    max-width: 790px;
+}
+
+.eyebrow {
+    color: var(--gold);
+    font: 700 11px Inter, sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.22;
+    margin: 14px 0;
+}
+
+h1 em {
+    color: var(--gold);
+    font-style: normal;
+}
+
+h2,
+h3 {
+    line-height: 1.35;
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 18px;
+    max-width: 680px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+/* =========================
+   5. BUTTONS
+========================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 18px;
+
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+
+    background: linear-gradient(
+        130deg,
+        var(--gold2),
+        var(--gold)
+    );
+
+    color: #17130a;
+    font: 600 14px 'Hind Siliguri', sans-serif;
+
+    cursor: pointer;
+    text-align: center;
+    transition:
+        transform var(--transition),
+        filter var(--transition),
+        box-shadow var(--transition);
+}
+
+.btn:hover {
+    color: #17130a;
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(233, 189, 89, 0.12);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:focus-visible,
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--gold2);
+    outline-offset: 3px;
+}
+
+.btn.secondary {
+    background: transparent;
+    color: var(--gold);
+}
+
+.btn.secondary:hover {
+    background: rgba(233, 189, 89, 0.08);
+    color: var(--gold2);
+}
+
+.btn.small {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.btn.full {
+    width: 100%;
+    min-height: 44px;
+    margin-top: 7px;
+}
+
+/* =========================
+   6. CARDS & GRID
+========================= */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+    margin: 22px 0;
+}
+
+.card,
+.formcard,
+.pricebox,
+.notice {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+
+    background: linear-gradient(
+        145deg,
+        #181a20,
+        #111216
+    );
+}
+
+.card {
+    transition:
+        transform var(--transition),
+        border-color var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: #55503e;
+}
+
+.card h2 {
+    font: 700 28px Inter, sans-serif;
+    color: var(--gold);
+}
+
+.card p,
+.notice p {
+    color: var(--muted);
+}
+
+/* =========================
+   7. FORM SECTION
+========================= */
+.formwrap {
+    width: 100%;
+    max-width: 480px;
+    margin: 48px auto 70px;
+    padding: 0 12px;
+}
+
+.formwrap h1 {
+    font-size: 36px;
+    text-align: center;
+}
+
+.formcard {
+    display: grid;
+    gap: 14px;
+    margin: 20px 0;
+    box-shadow: var(--shadow);
+}
+
+.formcard h2 {
+    margin: 0 0 5px;
+    font-size: 21px;
+}
+
+.formcard label {
+    display: grid;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group {
+    display: grid;
+    gap: 7px;
+}
+
+.form-group label {
+    font-weight: 600;
+}
+
+/* =========================
+   8. INPUTS & TEXTAREA
+========================= */
+.input {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+
+    border: 1px solid #3b3d45;
+    border-radius: 8px;
+
+    padding: 10px 12px;
+
+    background: #0b0c10;
+    color: var(--text);
+
+    font: 14px 'Hind Siliguri', sans-serif;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.input::placeholder {
+    color: #777982;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(233, 189, 89, 0.10);
+}
+
+.input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+select.input {
+    cursor: pointer;
+}
+
+textarea.input,
+.textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: var(--gold);
+}
+
+/* =========================
+   9. BALANCE & PRICE BOX
+========================= */
+.pricebox {
+    margin: 20px 0;
+    color: var(--muted);
+}
+
+.pricebox strong {
+    display: block;
+    margin: 8px 0;
+
+    color: var(--gold);
+    font: 700 28px Inter, sans-serif;
+
+    overflow-wrap: anywhere;
+}
+
+.pricebox p {
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+/* =========================
+   10. NOTIFICATIONS
+========================= */
+.notice {
+    margin: 30px 0;
+}
+
+.notice strong {
+    color: var(--gold);
+}
+
+.notice h3 {
+    margin-top: 0;
+}
+
+.error {
+    color: var(--red);
+    font-size: 13px;
+}
+
+.flash {
+    padding: 12px 15px;
+    margin: 15px 0;
+
+    border-radius: 8px;
+    border: 1px solid #355b42;
+
+    background: #1b2820;
+    color: var(--green);
+}
+
+.flash.error {
+    background: #2b191b;
+    border-color: #67353a;
+    color: var(--red);
+}
+
+/* =========================
+   11. PAGE HEADINGS
+========================= */
+.pagehead {
+    padding: 38px 0 10px;
+}
+
+.pagehead h1 {
+    font-size: clamp(30px, 4vw, 42px);
+}
+
+.sectionhead {
+    margin: 30px 0 10px;
+}
+
+/* =========================
+   12. TABLES
+========================= */
+.tablewrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin: 20px 0 40px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+    background: #111216;
+}
+
+th,
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+
+    text-align: left;
+    vertical-align: top;
+    font-size: 14px;
+}
+
+th {
+    color: var(--gold);
+    background: #191b20;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+td {
+    overflow-wrap: anywhere;
+}
+
+tbody tr {
+    transition: background var(--transition);
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.025);
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+.status {
+    font-size: 12px;
+    color: var(--gold);
+}
+
+.inline {
+    display: flex;
+    gap: 6px;
+    min-width: 260px;
+}
+
+.inline .input {
+    min-width: 85px;
+}
+
+.proof {
+    max-width: 280px;
+    overflow-wrap: anywhere;
+}
+
+.empty {
+    padding: 25px;
+    color: var(--muted);
+
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* =========================
+   13. SECURITY NOTICE
+========================= */
+.security-notice {
+    margin-top: 20px;
+    padding: 16px;
+
+    border: 1px solid #373126;
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+
+    background: #15140f;
+    font-size: 14px;
+}
+
+.security-notice strong {
+    color: var(--gold);
+}
+
+.security-notice p {
+    margin-bottom: 0;
+    color: var(--muted);
+    line-height: 1.8;
+}
+
+/* =========================
+   14. FOOTER
+========================= */
+footer {
+    margin-top: 50px;
+    padding: 25px 12px;
+
+    border-top: 1px solid var(--line);
+
+    color: #777982;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* =========================
+   15. TABLET RESPONSIVE
+========================= */
+@media (max-width: 750px) {
+    header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+    }
+
+    nav {
+        gap: 10px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero {
+        padding-top: 50px;
+    }
+
+    .formwrap {
+        margin-top: 32px;
+    }
+}
+
+/* =========================
+   16. MOBILE RESPONSIVE
+========================= */
+@media (max-width: 520px) {
+    .container {
+        width: calc(100% - 24px);
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .card,
+    .formcard,
+    .pricebox,
+    .notice {
+        padding: 17px;
+    }
+
+    .formwrap {
+        margin-top: 25px;
+        padding: 0 4px;
+    }
+
+    .formwrap h1 {
+        font-size: 30px;
+    }
+
+    .pricebox strong {
+        font-size: 25px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions .btn {
+        width: 100%;
+    }
+
+    nav {
+        row-gap: 8px;
+        column-gap: 12px;
+        font-size: 13px;
+    }
+
+    .tablewrap {
+        border-radius: 9px;
+    }
+}
+
+/* =========================
+   17. REDUCED MOTION
+========================= */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
