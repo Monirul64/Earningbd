@@ -1,1 +1,21 @@
-{% extends "base.html" %}{% block content %}<section class="formwrap"><h1>{{ code }}</h1><p>{{ message }}</p><a class="btn" href="{{ url_for('index') }}">হোমে ফিরুন</a></section>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="formwrap">
+
+    <!-- Error Code -->
+    <h1>{{ code }}</h1>
+
+    <!-- Error Message -->
+    <p>{{ message }}</p>
+
+    <!-- Back to Home Button -->
+    <a class="btn" href="{{ url_for('index') }}">
+        হোমে ফিরুন
+    </a>
+
+</section>
+
+{% endblock %}
