@@ -1,1 +1,56 @@
-{% extends "base.html" %}{% block content %}<section class="formwrap"><span class="eyebrow">WELCOME BACK</span><h1>লগইন</h1><form class="formcard" method="post">{{ form.hidden_tag() }}{% for f in [form.identity,form.password] %}<label>{{ f.label }}{{ f(class_="input") }}{% for e in f.errors %}<small class="error">{{ e }}</small>{% endfor %}</label>{% endfor %}{{ form.submit(class_="btn full") }}</form><p><a href="{{ url_for('forgot_password') }}">পাসওয়ার্ড ভুলে গেছেন?</a></p></section>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="formwrap">
+
+    <!-- Page Header -->
+    <span class="eyebrow">
+        WELCOME BACK
+    </span>
+
+    <h1>লগইন</h1>
+
+    <!-- Login Form -->
+    <form class="formcard" method="post">
+
+        {{ form.hidden_tag() }}
+
+        <!-- Identity and Password Fields -->
+        {% for f in [form.identity, form.password] %}
+
+            <label>
+
+                {{ f.label }}
+
+                {{ f(class_="input") }}
+
+                <!-- Validation Errors -->
+                {% for e in f.errors %}
+
+                    <small class="error">
+                        {{ e }}
+                    </small>
+
+                {% endfor %}
+
+            </label>
+
+        {% endfor %}
+
+        <!-- Submit Button -->
+        {{ form.submit(class_="btn full") }}
+
+    </form>
+
+    <!-- Forgot Password Link -->
+    <p>
+        <a href="{{ url_for('forgot_password') }}">
+            পাসওয়ার্ড ভুলে গেছেন?
+        </a>
+    </p>
+
+</section>
+
+{% endblock %}
