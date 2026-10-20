@@ -1,12 +1,110 @@
-{% extends "base.html" %}{% block content %}<section class="formwrap">
-  <span class="eyebrow">PROJECT ACCESS</span><h1>প্রজেক্ট কিনুন</h1><div class="pricebox">
-    <span>প্রজেক্ট প্যাকেজ</span><strong>৳৫০০ – ৳২০,০০০</strong><p>{{ project_days }} দিনের অ্যাক্সেস · প্রতিদিন সর্বোচ্চ {{ tasks_per_day }}টি কাজের স্লট</p></div>
-<div class="card"><h3>প্যাকেজ ও প্রতি টাস্কের উদাহরণ রেট</h3><p>৳৫০০ → ৳৫০ · ৳১,০০০ → ৳১০০ · ৳২,৫০০ → ৳৩০০ · ৳৫,০০০ → ৳৭০০ · ৳১০,০০০ → ৳১০০০ · ৳১৫,০০০ → ৳১,৪০০ · ৳২০,০০০ → ৳২,০০০</p>
-  <p class="muted">শুধু Admin অনুমোদিত কাজের জন্য প্রযোজ্য। এগুলো নিশ্চিত আয় নয়; বাস্তব আয় ও পর্যাপ্ত তহবিলের ওপর নির্ভরশীল।</p>
-</div><p class="muted">নিচের পেমেন্ট মাধ্যম ব্যবহার করে পেমেন্ট সম্পন্ন করুন এবং Transaction ID দিন। Admin নিজে যাচাই করার পরই অ্যাকাউন্ট সক্রিয় হবে।।</p>
-  <P>বিকাশ : 01706857964</P>
-  <P>নগদ : 01706857964</P>
-  <P>রকেট : 01706857964</P>
-  <form class="formcard" method="post">{{ form.hidden_tag() }}{% for f in [form.package_price,form.method,form.reference] %}
-    <label>{{ f.label }}{{ f(class_="input") }}{% for e in f.errors %}<small class="error">{{ e }}</small>{% endfor %}</label>{% endfor %}{{ form.submit(class_="btn full") }}</form>
-</section>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="formwrap">
+
+    <!-- Page Header -->
+    <span class="eyebrow">PROJECT ACCESS</span>
+
+    <h1>প্রজেক্ট কিনুন</h1>
+
+    <!-- Project Price Box -->
+    <div class="pricebox">
+
+        <span>প্রজেক্ট প্যাকেজ</span>
+
+        <strong>৳৫০০ – ৳২০,০০০</strong>
+
+        <p>
+            {{ project_days }} দিনের অ্যাক্সেস ·
+            প্রতিদিন সর্বোচ্চ {{ tasks_per_day }}টি কাজের স্লট
+        </p>
+
+    </div>
+
+    <!-- Package Rates -->
+    <div class="card">
+
+        <h3>প্যাকেজ ও প্রতি টাস্কের উদাহরণ রেট</h3>
+
+        <p>
+            ৳৫০০ → ৳৫০ ·
+            ৳১,০০০ → ৳১০০ ·
+            ৳২,৫০০ → ৳৩০০ ·
+            ৳৫,০০০ → ৳৭০০ ·
+            ৳১০,০০০ → ৳১,০০০ ·
+            ৳১৫,০০০ → ৳১,৪০০ ·
+            ৳২০,০০০ → ৳২,০০০
+        </p>
+
+        <p class="muted">
+            শুধু Admin অনুমোদিত কাজের জন্য প্রযোজ্য।
+            এগুলো নিশ্চিত আয় নয়; বাস্তব আয় ও পর্যাপ্ত
+            তহবিলের ওপর নির্ভরশীল।
+        </p>
+
+    </div>
+
+    <!-- Payment Instructions -->
+    <p class="muted">
+        নিচের পেমেন্ট মাধ্যম ব্যবহার করে পেমেন্ট সম্পন্ন করুন
+        এবং Transaction ID দিন। Admin নিজে যাচাই করার
+        পরই অ্যাকাউন্ট সক্রিয় হবে।
+    </p>
+
+    <!-- Payment Methods -->
+    <div class="card">
+
+        <p>
+            <strong>বিকাশ:</strong> 01706857964
+        </p>
+
+        <p>
+            <strong>নগদ:</strong> 01706857964
+        </p>
+
+        <p>
+            <strong>রকেট:</strong> 01706857964
+        </p>
+
+    </div>
+
+    <!-- Project Purchase Form -->
+    <form class="formcard" method="post">
+
+        {{ form.hidden_tag() }}
+
+        {% for f in [
+            form.package_price,
+            form.method,
+            form.reference
+        ] %}
+
+            <label>
+
+                {{ f.label }}
+
+                {{ f(class_="input") }}
+
+                {% for e in f.errors %}
+
+                    <small class="error">
+                        {{ e }}
+                    </small>
+
+                {% endfor %}
+
+            </label>
+
+        {% endfor %}
+
+        <!-- Submit Button -->
+        {{ form.submit(class_="btn full") }}
+
+    </form>
+
+</section>
+
+{% endblock %}
