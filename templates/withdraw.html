@@ -1,1 +1,91 @@
-{% extends "base.html" %}{% block content %}<section class="formwrap"><h1>উত্তোলন</h1><div class="pricebox">ব্যালেন্স <strong>{{ balance|money }}</strong><p>সাপ্তাহিক অনুরোধের দিন: {{ weekly_payout_day }}</p></div>{% if can_request %}<form class="formcard" method="post">{{ form.hidden_tag() }}{% for f in [form.amount,form.method,form.account_number] %}<label>{{ f.label }}{{ f(class_="input") }}</label>{% endfor %}{{ form.submit(class_="btn full") }}</form>{% else %}<p class="muted">নির্ধারিত দিনে আবার চেষ্টা করুন।</p>{% endif %}<p class="muted">Admin পেমেন্ট আলাদাভাবে পাঠাবেন। PIN/OTP কখনো দেবেন না।</p></section>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+<section class="formwrap">
+
+    <h1>উত্তোলন</h1>
+
+    <!-- Balance Information -->
+    <div class="pricebox">
+        <span>বর্তমান ব্যালেন্স</span>
+        <strong>{{ balance|money }}</strong>
+
+        <p>
+            <i class="icon-calendar"></i>
+            সাপ্তাহিক অনুরোধের দিন:
+            <b>{{ weekly_payout_day }}</b>
+        </p>
+    </div>
+
+    <!-- Withdrawal Form -->
+    {% if can_request %}
+
+        <form class="formcard" method="post">
+
+            {{ form.hidden_tag() }}
+
+            <h2>উত্তোলনের তথ্য দিন</h2>
+
+            <div class="form-group">
+                <label for="{{ form.amount.id }}">
+                    {{ form.amount.label.text }}
+                </label>
+                {{ form.amount(class_="input", placeholder="টাকার পরিমাণ লিখুন") }}
+
+                {% for error in form.amount.errors %}
+                    <small class="error">{{ error }}</small>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.method.id }}">
+                    {{ form.method.label.text }}
+                </label>
+                {{ form.method(class_="input") }}
+
+                {% for error in form.method.errors %}
+                    <small class="error">{{ error }}</small>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.account_number.id }}">
+                    {{ form.account_number.label.text }}
+                </label>
+                {{ form.account_number(
+                    class_="input",
+                    placeholder="পেমেন্ট অ্যাকাউন্ট নম্বর লিখুন"
+                ) }}
+
+                {% for error in form.account_number.errors %}
+                    <small class="error">{{ error }}</small>
+                {% endfor %}
+            </div>
+
+            {{ form.submit(class_="btn full") }}
+
+        </form>
+
+    {% else %}
+
+        <div class="notice">
+            <h3>উত্তোলন সাময়িকভাবে বন্ধ</h3>
+            <p class="muted">
+                নির্ধারিত দিনে আবার চেষ্টা করুন।
+            </p>
+        </div>
+
+    {% endif %}
+
+    <!-- Security Notice -->
+    <div class="security-notice">
+        <strong>নিরাপত্তা নির্দেশনা</strong>
+        <p>
+            Admin আপনার পেমেন্ট আলাদাভাবে পাঠাবেন।
+            আপনার PIN বা OTP কখনো কাউকে দেবেন না।
+        </p>
+    </div>
+
+</section>
+{% endblock %}
