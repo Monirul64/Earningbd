@@ -330,25 +330,93 @@ def tasks():
     submitted = {s.task_id for s in TaskSubmission.query.filter_by(user_id=current_user.id, purchase_id=purchase.id).all()}
     return render_template("tasks.html", purchase=purchase, day=day, tasks=task_list, submitted=submitted)
 
-@app.route("/tasks/<int:task_id>/submit", methods=["GET","POST"])
+
+
+
+@app.route("/tasks/<int:task_id>/submit", methods=["GET", "POST"])
 @login_required
 def submit_task(task_id):
     purchase = active_purchase(current_user.id)
+
     if not purchase:
         abort(403)
-    task = Task.query.filter_by(id=task_id, is_active=True).first_or_404()
+
+    task = Task.query.filter_by(
+        id=task_id,
+        is_active=True
+    ).first_or_404()
+
     if task.day_number != current_day(purchase):
         abort(403)
-    if TaskSubmission.query.filter_by(user_id=current_user.id, purchase_id=purchase.id, task_id=task.id).first():
+
+    existing = TaskSubmission.query.filter_by(
+        user_id=current_user.id,
+        purchase_id=purchase.id,
+        task_id=task.id
+    ).first()
+
+    if existing:
         flash("এই কাজটি ইতিমধ্যে জমা দিয়েছেন।", "error")
         return redirect(url_for("tasks"))
+
     form = ProofForm()
+
     if form.validate_on_submit():
-        db.session.add(TaskSubmission(user_id=current_user.id, purchase_id=purchase.id, task_id=task.id, proof=form.proof.data.strip()))
-        db.session.commit()
-        flash("কাজ জমা হয়েছে। যাচাই ও অনুমোদনের পর পুরস্কার প্রাপ্য হবে।", "success")
-        return redirect(url_for("tasks"))
-    return render_template("submit.html", form=form, task=task)
+        task_reward = PROJECT_PACKAGES.get(
+            str(int(purchase.price)),
+            Decimal("1.00")
+        )
+
+        try:
+            submission = TaskSubmission(
+                user_id=current_user.id,
+                purchase_id=purchase.id,
+                task_id=task.id,
+                proof=form.proof.data.strip(),
+                status="approved",
+                reviewed_at=datetime.utcnow(),
+                admin_note="Auto approved"
+            )
+
+            db.session.add(submission)
+
+            db.session.add(
+                Ledger(
+                    user_id=current_user.id,
+                    amount=task_reward,
+                    kind="task_reward",
+                    description=f"Auto approved task: {task.title}"
+                )
+            )
+
+            db.session.commit()
+
+            flash(
+                f"কাজ স্বয়ংক্রিয়ভাবে অনুমোদিত হয়েছে। "
+                f"পুরস্কার: ৳{task_reward}",
+                "success"
+            )
+
+            return redirect(url_for("tasks"))
+
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Task auto approval failed")
+            flash("কাজ জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error")
+
+    return render_template(
+        "submit.html",
+        form=form,
+        task=task
+    )
+
+
+
+
+
+
+
+
 
 @app.route("/wallet")
 @login_required
