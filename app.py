@@ -635,28 +635,34 @@ def forbidden(_):
 def not_found(_):
     return render_template("error.html", code=404, message="পেজটি পাওয়া যায়নি।"), 404
 
+
 def init_db():
     db.create_all()
-    admin_name = os.environ.get("ADMIN_USER", "admin")
+
+    admin_name = os.environ.get("ADMIN_USER", "admin").strip()
     admin_password = os.environ.get("ADMIN_PASSWORD")
+
     if production and not admin_password:
         raise RuntimeError("Set ADMIN_PASSWORD in production.")
+
     if not admin_password:
         admin_password = "ChangeThisAdmin123!"
-        print("LOCAL DEVELOPMENT ADMIN: admin / ChangeThisAdmin123! — change before public use.")
-    admin = User.query.filter(func.lower(User.username) == admin_name.lower()).first()
+        print("LOCAL DEVELOPMENT ADMIN: admin / ChangeThisAdmin123!")
+
+    admin = User.query.filter(
+        func.lower(User.username) == admin_name.lower()
+    ).first()
+
     if not admin:
-        admin = User(username=admin_name, email="admin@localhost.invalid", is_admin=True)
-        admin.set_password(admin_password)
+        admin = User(
+            username=admin_name,
+            email="admin@localhost.invalid",
+            is_admin=True
+        )
         db.session.add(admin)
-        db.session.commit()
-    elif not admin.is_admin:
-        admin.is_admin = True
-        admin.set_password(admin_password)
-        db.session.commit()
 
-with app.app_context():
-    init_db()
+    # অ্যাডমিনের অনুমতি ও পাসওয়ার্ড নিশ্চিত করা
+    admin.is_admin = True
+    admin.set_password(admin_password)
 
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=int(os.environ.get("PORT", 5000)), debug=False)
+    db.session.commit()
