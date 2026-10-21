@@ -642,8 +642,8 @@ def init_db():
     if production and not admin_password:
         raise RuntimeError("Set ADMIN_PASSWORD in production.")
     if not admin_password:
-        admin_password = "Monirul205547"
-        print("LOCAL DEVELOPMENT ADMIN: admin / Monirul205547 — change before public use.")
+        admin_password = "ChangeThisAdmin123!"
+        print("LOCAL DEVELOPMENT ADMIN: admin / ChangeThisAdmin123! — change before public use.")
     admin = User.query.filter(func.lower(User.username) == admin_name.lower()).first()
     if not admin:
         admin = User(username=admin_name, email="admin@localhost.invalid", is_admin=True)
