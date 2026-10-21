@@ -661,8 +661,14 @@ def init_db():
         )
         db.session.add(admin)
 
+   
     # অ্যাডমিনের অনুমতি ও পাসওয়ার্ড নিশ্চিত করা
     admin.is_admin = True
     admin.set_password(admin_password)
 
     db.session.commit()
+
+
+with app.app_context():
+    init_db()
+
