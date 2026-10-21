@@ -48,7 +48,7 @@ PROJECT_PACKAGES = {
 }
 PROJECT_PRICE = Decimal("500.00")
 DAILY_REWARD = PROJECT_PACKAGES["500"] * TASKS_PER_DAY
-WEEKLY_PAYOUT_DAY = os.environ.get("WEEKLY_PAYOUT_DAY", "Wednesday")
+WEEKLY_PAYOUT_DAY = os.environ.get("WEEKLY_PAYOUT_DAY", "Sunday")
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -357,27 +357,97 @@ def wallet():
     payouts = Payout.query.filter_by(user_id=current_user.id).order_by(Payout.created_at.desc()).all()
     return render_template("wallet.html", balance=user_balance(current_user.id), entries=entries, payouts=payouts)
 
-@app.route("/withdraw", methods=["GET","POST"])
+
+
+
+
+
+
+
+@app.route("/withdraw", methods=["GET", "POST"])
 @login_required
 def withdraw():
     form = PayoutForm()
+    balance = Decimal(str(user_balance(current_user.id)))
+
     if date.today().strftime("%A") != WEEKLY_PAYOUT_DAY:
-        flash(f"উত্তোলনের অনুরোধ নেওয়ার নির্ধারিত দিন {WEEKLY_PAYOUT_DAY}।", "error")
-        return render_template("withdraw.html", form=form, balance=user_balance(current_user.id), can_request=False)
+        flash(
+            f"উত্তোলনের অনুরোধ নেওয়ার নির্ধারিত দিন "
+            f"{WEEKLY_PAYOUT_DAY}।",
+            "error"
+        )
+        return render_template(
+            "withdraw.html",
+            form=form,
+            balance=balance,
+            can_request=False
+        )
+
     if form.validate_on_submit():
         try:
-            amount = Decimal(form.amount.data).quantize(Decimal("0.01"))
+            amount = Decimal(str(form.amount.data)).quantize(
+                Decimal("0.01")
+            )
         except Exception:
             amount = Decimal("0")
-        pending = db.session.query(func.coalesce(func.sum(Payout.amount), 0)).filter_by(user_id=current_user.id, status="pending").scalar()
-        if amount <= 0 or amount > user_balance(current_user.id) - Decimal(str(pending or 0)):
-            flash("টাকার পরিমাণ সঠিক নয় বা পর্যাপ্ত ব্যালেন্স নেই।", "error")
+
+        pending = db.session.query(
+            func.coalesce(func.sum(Payout.amount), 0)
+        ).filter_by(
+            user_id=current_user.id,
+            status="pending"
+        ).scalar()
+
+        available_balance = balance - Decimal(str(pending or 0))
+
+        if amount < Decimal("500.00"):
+            flash(
+                "সর্বনিম্ন ৫০০ টাকা উত্তোলন করতে পারবেন।",
+                "error"
+            )
+
+        elif amount > available_balance:
+            flash(
+                "আপনার পর্যাপ্ত ব্যালেন্স নেই।",
+                "error"
+            )
+
+        elif amount <= 0:
+            flash("টাকার পরিমাণ সঠিক নয়।", "error")
+
         else:
-            db.session.add(Payout(user_id=current_user.id, amount=amount, method=form.method.data, account_number=form.account_number.data.strip()))
+            payout = Payout(
+                user_id=current_user.id,
+                amount=amount,
+                method=form.method.data,
+                account_number=form.account_number.data.strip(),
+                status="pending"
+            )
+
+            db.session.add(payout)
             db.session.commit()
-            flash("উত্তোলনের অনুরোধ জমা হয়েছে। Admin যাচাই করবেন।", "success")
+
+            flash(
+                "উত্তোলনের অনুরোধ জমা হয়েছে। Admin যাচাই করবেন।",
+                "success"
+            )
             return redirect(url_for("wallet"))
-    return render_template("withdraw.html", form=form, balance=user_balance(current_user.id), can_request=True)
+
+    return render_template(
+        "withdraw.html",
+        form=form,
+        balance=balance,
+        can_request=True
+    )
+
+
+
+
+
+
+
+
+
 
 @app.route("/admin")
 @admin_required
