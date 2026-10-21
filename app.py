@@ -38,13 +38,13 @@ PROJECT_DAYS = 120
 TASKS_PER_DAY = 5
 # Illustrative rates per approved task; these are not guaranteed earnings.
 PROJECT_PACKAGES = {
-    "500": Decimal("1.00"),
-    "1000": Decimal("2.00"),
-    "2500": Decimal("3.00"),
-    "5000": Decimal("5.00"),
-    "10000": Decimal("8.00"),
-    "15000": Decimal("10.00"),
-    "20000": Decimal("15.00"),
+    "500": Decimal("10.00"),
+    "1000": Decimal("20.00"),
+    "2500": Decimal("60.00"),
+    "5000": Decimal("140.00"),
+    "10000": Decimal("200.00"),
+    "15000": Decimal("300.00"),
+    "20000": Decimal("400.00"),
 }
 PROJECT_PRICE = Decimal("500.00")
 DAILY_REWARD = PROJECT_PACKAGES["500"] * TASKS_PER_DAY
