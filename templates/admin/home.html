@@ -1,1 +1,39 @@
-{% extends "base.html" %}{% block content %}<div class="pagehead"><span class="eyebrow">ADMIN CONTROL</span><h1>Admin Panel</h1></div><div class="grid"><a class="card" href="{{ url_for('admin_users') }}">ইউজার <h2>{{ users }}</h2></a><a class="card" href="{{ url_for('admin_purchases') }}">পেন্ডিং কেনাকাটা <h2>{{ pending_purchases }}</h2></a><a class="card" href="{{ url_for('admin_submissions') }}">কাজ যাচাই <h2>{{ pending_submissions }}</h2></a><a class="card" href="{{ url_for('admin_payouts') }}">উত্তোলন <h2>{{ pending_payouts }}</h2></a><a class="card" href="{{ url_for('admin_tasks') }}">১২০ দিনের কাজ তৈরি</a></div>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="pagehead">
+    <span class="eyebrow">ADMIN CONTROL</span>
+    <h1>Admin Panel</h1>
+</div>
+
+<div class="grid">
+
+    <a class="card" href="{{ url_for('admin_users') }}">
+        ইউজার
+        <h2>{{ users }}</h2>
+    </a>
+
+    <a class="card" href="{{ url_for('admin_purchases') }}">
+        পেন্ডিং কেনাকাটা
+        <h2>{{ pending_purchases }}</h2>
+    </a>
+
+    <a class="card" href="{{ url_for('admin_submissions') }}">
+        কাজ যাচাই
+        <h2>{{ pending_submissions }}</h2>
+    </a>
+
+    <a class="card" href="{{ url_for('admin_payouts') }}">
+        উত্তোলন
+        <h2>{{ pending_payouts }}</h2>
+    </a>
+
+    <a class="card" href="{{ url_for('admin_tasks') }}">
+        ১২০ দিনের কাজ তৈরি
+    </a>
+
+</div>
+
+{% endblock %}
