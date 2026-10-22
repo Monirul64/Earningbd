@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="formwrap checkout">
+
+    <!-- Page Header -->
+    <span class="eyebrow">CHECKOUT</span>
+
+    <h1>প্যাকেজ নিশ্চিত করুন</h1>
+
+    <!-- Selected Package -->
+    <div class="card checkout-pkg">
+
+        <div class="pkg-img">
+            <img src="{{ url_for('static', filename='laptop.svg') }}" alt="প্রজেক্ট ল্যাপটপ">
+        </div>
+
+        <span class="muted">আপনার নির্বাচিত প্যাকেজ</span>
+
+        <h2>৳{{ price|bn }}</h2>
+
+        <p>
+            {{ project_days|bn }} দিনের অ্যাক্সেস ·
+            প্রতিদিন সর্বোচ্চ {{ tasks_per_day|bn }}টি কাজের স্লট
+        </p>
+
+        <a href="{{ url_for('buy') }}">← অন্য প্যাকেজ বেছে নিন</a>
+
+    </div>
+
+    <!-- Payment Instructions -->
+    <p class="muted">
+         📢 পেমেন্ট সংক্রান্ত গুরুত্বপূর্ণ নির্দেশনা 💸<br>
+       ✅ টাকা পাঠানোর সময় অবশ্যই Send Money অপশন ব্যবহার করবেন।   <br>
+       🧾 টাকা পাঠানোর পর আপনার Transaction ID (TrxID) সংগ্রহ করে রাখবেন। পেমেন্ট ভেরিফিকেশনের জন্য Transaction ID জমা দিতে হবে।   <br>
+      ⚠️ সতর্কতা: সঠিক নম্বরে টাকা পাঠান এবং Transaction ID দেওয়ার আগে ভালোভাবে যাচাই করুন।  <br>
+         ❤️ ধন্যবাদ — Earning BD-এর সঙ্গে থাকার জন্য।
+    </p>
+
+    <!-- Payment Methods -->
+    <div class="card">
+
+        <p>
+            <strong>বিকাশ:</strong> 017XXXXXXXX
+        </p>
+
+        <p>
+            <strong>নগদ:</strong> 017XXXXXXXX
+        </p>
+
+        <p>
+            <strong>রকেট:</strong> 017XXXXXXXX
+        </p>
+
+        <p>
+            <strong>উপায়:</strong> 017XXXXXXXX
+        </p>
+
+    </div>
+
+    <!-- Purchase Form (package is fixed from the URL) -->
+    <form class="formcard" method="post">
+
+        {{ form.hidden_tag() }}
+
+        {% for f in [
+            form.method,
+            form.reference
+        ] %}
+
+            <label>
+
+                {{ f.label }}
+
+                {{ f(class_="input") }}
+
+                {% for e in f.errors %}
+
+                    <small class="error">
+                        {{ e }}
+                    </small>
+
+                {% endfor %}
+
+            </label>
+
+        {% endfor %}
+
+        {{ form.submit(class_="btn full") }}
+
+    </form>
+
+</section>
+
+{% endblock %}
