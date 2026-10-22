@@ -43,7 +43,14 @@
 
             <span class="muted pkg-name">প্রজেক্ট {{ loop.index|bn }}</span>
 
-            <h2>৳{{ p.price|bn }}</h2>
+            <div class="pkg-pricerow">
+                <h2>৳{{ p.price|bn }}</h2>
+
+                <div class="pkg-earn">
+                    <span>{{ project_days|bn }} দিনে সর্বোচ্চ <b>৳{{ p.total|bn }}</b></span>
+                    <span>প্রতিদিন সর্বোচ্চ <b>৳{{ p.daily|bn }}</b></span>
+                </div>
+            </div>
                                                                                                
 
             <ul class="pkg-info">
