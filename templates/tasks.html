@@ -21,6 +21,18 @@
 
 </div>
 
+<!-- Project Switcher (একাধিক সক্রিয় প্রজেক্ট থাকলে) -->
+{% if purchases and purchases|length > 1 %}
+<div class="actions">
+    {% for p in purchases %}
+        <a class="btn small {{ '' if p.id == purchase.id else 'secondary' }}"
+           href="{{ url_for('tasks', purchase=p.id) }}">
+            প্রজেক্ট {{ loop.index|bn }} · ৳{{ p.price|bn }}
+        </a>
+    {% endfor %}
+</div>
+{% endif %}
+
 <!-- Tasks Grid -->
 <div class="grid">
 
@@ -52,7 +64,7 @@
 
                 <a
                     class="btn small"
-                    href="{{ url_for('submit_task', task_id=t.id) }}"
+                    href="{{ url_for('submit_task', task_id=t.id, purchase=purchase.id) }}"
                 >
                     প্রমাণ জমা দিন
                 </a>
