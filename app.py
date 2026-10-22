@@ -36,24 +36,23 @@ login_manager.login_message = "এই পেজ দেখতে লগইন ক
 
 PROJECT_DAYS = 120
 TASKS_PER_DAY = 5
-# Illustrative rates per approved task; these are not guaranteed earnings.
 PROJECT_PACKAGES = {
     "500": Decimal("10.00"),
     "1000": Decimal("20.00"),
-    "1500": Decimal("30.00"),    # নতুন - রেট নিজে ঠিক করে নিন
-    "2000": Decimal("40.00"),    # নতুন - রেট নিজে ঠিক করে নিন
+    "1500": Decimal("30.00"),
+    "2000": Decimal("40.00"),
     "2500": Decimal("60.00"),
-    "3000": Decimal("60.00"),    # নতুন - রেট নিজে ঠিক করে নিন
-    "4000": Decimal("80.00"),    # নতুন - রেট নিজে ঠিক করে নিন
+    "3000": Decimal("60.00"),
+    "4000": Decimal("80.00"),
     "5000": Decimal("140.00"),
-    "7500": Decimal("150.00"),   # নতুন - রেট নিজে ঠিক করে নিন
+    "7500": Decimal("150.00"),
     "10000": Decimal("200.00"),
     "15000": Decimal("300.00"),
     "20000": Decimal("400.00"),
 }
 PROJECT_PRICE = Decimal("500.00")
 DAILY_REWARD = PROJECT_PACKAGES["500"] * TASKS_PER_DAY
-WEEKLY_PAYOUT_DAY = os.environ.get("WEEKLY_PAYOUT_DAY", "Thursday")
+WEEKLY_PAYOUT_DAY = os.environ.get("WEEKLY_PAYOUT_DAY", "Sunday")
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,7 +72,7 @@ class Purchase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
     price = db.Column(db.Numeric(12, 2), nullable=False, default=PROJECT_PRICE)
-    status = db.Column(db.String(20), default="pending", nullable=False)  # pending/active/rejected/expired
+    status = db.Column(db.String(20), default="pending", nullable=False)
     payment_method = db.Column(db.String(20), nullable=False)
     payment_reference = db.Column(db.String(120), nullable=False)
     starts_at = db.Column(db.DateTime, nullable=True)
@@ -148,11 +147,6 @@ class ResetForm(FlaskForm):
     submit = SubmitField("পাসওয়ার্ড পরিবর্তন করুন")
 
 class PurchaseForm(FlaskForm):
-    # ---- আগের কোড (রেখে দেওয়া হলো, মুছে ফেলা হয়নি) ----
-    # package_price = SelectField("প্রজেক্ট প্যাকেজ", choices=[(price, f"৳{int(price):,} — প্রতি অনুমোদিত টাস্ক ৳{reward}") 
-    #                 for price, reward in [("500", "50"), ("1000", "100"), ("2500", "300"), ("5000", "700"), ("10000", "1000"), ("15000", "1400"),
-    #                                    ("20000", "2000")]], validators=[DataRequired()])
-    # ---- নতুন: ১২টি প্যাকেজ (PROJECT_PACKAGES থেকে) ----
     package_price = SelectField(
         "প্রজেক্ট প্যাকেজ",
         choices=[(price, f"৳{int(price):,} প্যাকেজ") for price in PROJECT_PACKAGES],
@@ -204,14 +198,11 @@ def active_purchase(user_id):
     return Purchase.query.filter_by(user_id=user_id, status="active").filter(Purchase.ends_at > now).order_by(Purchase.ends_at.desc()).first()
 
 def active_purchases(user_id):
-    """ইউজারের সব সক্রিয় প্রজেক্ট (পুরনো আগে)"""
     now = datetime.utcnow()
     return (Purchase.query.filter_by(user_id=user_id, status="active")
             .filter(Purchase.ends_at > now).order_by(Purchase.starts_at.asc(), Purchase.id.asc()).all())
 
 def pick_purchase(user_id, task=None, requested_id=None):
-    """কোন প্রজেক্টের কাজ দেখানো/জমা হবে তা বেছে নেয়।
-    ?purchase=<id> দিলে সেটি; না দিলে প্রথম যে প্রজেক্টে আজকের কাজ বাকি আছে।"""
     purchases = active_purchases(user_id)
     if not purchases:
         return None
@@ -247,7 +238,6 @@ def money(value):
 app.jinja_env.filters["money"] = money
 
 def bn(value):
-    """সংখ্যাকে বাংলা অঙ্কে রূপান্তর (যেমন 20000 -> ২০,০০০)"""
     try:
         text = f"{int(value):,}"
     except (TypeError, ValueError):
@@ -318,7 +308,6 @@ def forgot_password():
             user.reset_token_expires = datetime.utcnow() + timedelta(minutes=30)
             db.session.commit()
             reset_url = url_for("reset_password", token=raw, _external=True)
-            # Demo flow: link is shown once in page. In production, send it by verified email provider.
             flash("ডেমো রিসেট লিংক: " + reset_url, "success")
         else:
             flash("ইমেইলটি নিবন্ধিত থাকলে রিসেট নির্দেশনা পাওয়া যাবে।", "success")
@@ -348,9 +337,28 @@ def reset_password(token):
 def dashboard():
     purchases = active_purchases(current_user.id)
     purchase = purchases[0] if purchases else None
+    
+    # Calculate Today's Income
+    today_start = datetime.combine(date.today(), datetime.min.time())
+    today_income = db.session.query(func.coalesce(func.sum(Ledger.amount), 0))        .filter(Ledger.user_id == current_user.id, Ledger.kind == "task_reward", Ledger.created_at >= today_start).scalar()
+    
+    # Calculate Total Withdrawals (paid/completed)
+    total_withdraw = db.session.query(func.coalesce(func.sum(Payout.amount), 0))        .filter(Payout.user_id == current_user.id, Payout.status == "paid").scalar()
+    
     recent = TaskSubmission.query.filter_by(user_id=current_user.id).order_by(TaskSubmission.created_at.desc()).limit(10).all()
-    payouts = Payout.query.filter_by(user_id=current_user.id).order_by(Payout.created_at.desc()).limit(5).all()
-    return render_template("dashboard.html", purchase=purchase, purchases=purchases, day=current_day(purchase), balance=user_balance(current_user.id), recent=recent, payouts=payouts)
+    payouts = Payout.query.filter_by(user_id=current_user.id).order_by(Payout.created_at.desc()).all()
+    
+    return render_template(
+        "dashboard.html",
+        purchase=purchase,
+        purchases=purchases,
+        day=current_day(purchase),
+        balance=user_balance(current_user.id),
+        today_income=Decimal(str(today_income or 0)),
+        total_withdraw=Decimal(str(total_withdraw or 0)),
+        recent=recent,
+        payouts=payouts
+    )
 
 @app.route("/buy", methods=["GET","POST"])
 @login_required
@@ -367,7 +375,6 @@ def buy():
         db.session.commit()
         flash("কেনার অনুরোধ জমা হয়েছে। Admin পেমেন্ট যাচাই করে অনুমোদন করবেন।", "success")
         return redirect(url_for("dashboard"))
-    # "এখনই কিনুন" বাটন থেকে আসা ?package=... আগে থেকে সিলেক্ট করা
     if request.method == "GET":
         chosen = request.args.get("package", "")
         if chosen in PROJECT_PACKAGES:
@@ -388,11 +395,10 @@ def buy():
 @app.route("/buy/<price>", methods=["GET", "POST"])
 @login_required
 def buy_package(price):
-    """নির্বাচিত প্যাকেজ কেনার আলাদা পেজ (এখনই কিনুন বাটন থেকে আসে)"""
     if price not in PROJECT_PACKAGES:
         abort(404)
     form = PurchaseForm()
-    form.package_price.data = price  # URL এর প্যাকেজই ব্যবহার হবে
+    form.package_price.data = price
     if form.validate_on_submit():
         purchase = Purchase(user_id=current_user.id, price=Decimal(price), payment_method=form.method.data,
                             payment_reference=form.reference.data.strip(), status="pending")
@@ -417,9 +423,6 @@ def tasks():
     task_list = Task.query.filter_by(day_number=day, is_active=True).order_by(Task.task_number).all()
     submitted = {s.task_id for s in TaskSubmission.query.filter_by(user_id=current_user.id, purchase_id=purchase.id).all()}
     return render_template("tasks.html", purchase=purchase, purchases=purchases, day=day, tasks=task_list, submitted=submitted)
-
-
-
 
 @app.route("/tasks/<int:task_id>/submit", methods=["GET", "POST"])
 @login_required
@@ -498,27 +501,12 @@ def submit_task(task_id):
         task=task
     )
 
-
-
-
-
-
-
-
-
 @app.route("/wallet")
 @login_required
 def wallet():
     entries = Ledger.query.filter_by(user_id=current_user.id).order_by(Ledger.created_at.desc()).all()
     payouts = Payout.query.filter_by(user_id=current_user.id).order_by(Payout.created_at.desc()).all()
     return render_template("wallet.html", balance=user_balance(current_user.id), entries=entries, payouts=payouts)
-
-
-
-
-
-
-
 
 @app.route("/withdraw", methods=["GET", "POST"])
 @login_required
@@ -596,15 +584,6 @@ def withdraw():
         can_request=True
     )
 
-
-
-
-
-
-
-
-
-
 @app.route("/admin")
 @admin_required
 def admin_home():
@@ -676,7 +655,6 @@ def review_submission(sid):
     sub.admin_note = (form.note.data or "").strip()
     if form.action.data == "approve":
         sub.status = "approved"
-        # This amount is a configurable task reward, not a guaranteed daily return.
         task_reward = PROJECT_PACKAGES.get(str(int(sub.purchase.price)), Decimal("1.00"))
         db.session.add(Ledger(user_id=sub.user_id, amount=task_reward, kind="task_reward", description=f"Approved task: {sub.task.title}"))
         flash(f"কাজ অনুমোদিত; ৳{task_reward} ব্যালেন্স যোগ হয়েছে।", "success")
@@ -723,10 +701,8 @@ def forbidden(_):
 def not_found(_):
     return render_template("error.html", code=404, message="পেজটি পাওয়া যায়নি।"), 404
 
-
 def init_db():
     db.create_all()
-
     admin_name = os.environ.get("ADMIN_USER", "admin").strip()
     admin_password = os.environ.get("ADMIN_PASSWORD")
 
@@ -749,14 +725,10 @@ def init_db():
         )
         db.session.add(admin)
 
-   
-    # অ্যাডমিনের অনুমতি ও পাসওয়ার্ড নিশ্চিত করা
     admin.is_admin = True
     admin.set_password(admin_password)
 
     db.session.commit()
-
-
 
 with app.app_context():
     init_db()
