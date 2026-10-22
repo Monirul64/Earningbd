@@ -872,3 +872,43 @@ footer {
 .checkout-pkg p {
     margin: 4px 0 12px;
 }
+
+
+/* =========================
+   20. PACKAGE EARNING INFO
+========================= */
+.pkg-pricerow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+}
+
+.pkg-earn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: auto;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--muted);
+    text-align: right;
+}
+
+.pkg-earn b {
+    color: var(--green);
+    font: 700 13px Inter, sans-serif;
+}
+
+@media (max-width: 520px) {
+    .pkg-earn {
+        font-size: 11px;
+        align-items: flex-start;
+        text-align: left;
+        margin-left: 0;
+    }
+    .pkg-earn b {
+        font-size: 12px;
+    }
+}
