@@ -34,7 +34,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message = "এই পেজ দেখতে লগইন করুন।"
 
-PROJECT_DAYS = 120
+PROJECT_DAYS = 60
 TASKS_PER_DAY = 5
 PROJECT_PACKAGES = {
     "500": Decimal("10.00"),
