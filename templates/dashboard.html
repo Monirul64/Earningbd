@@ -31,31 +31,25 @@
             <span class="muted">প্রজেক্ট</span>
 
             <h2>
-                {{ "সক্রিয়" if purchase else "নেই" }}
+                {% if purchases %}সক্রিয় ({{ purchases|length|bn }}টি){% else %}নেই{% endif %}
             </h2>
 
-            {% if purchase %}
+            {% for p in purchases %}
 
                 <p>
-                    দিন {{ day }} / {{ project_days }}
+                    <b>প্রজেক্ট {{ loop.index|bn }} · ৳{{ p.price|bn }}</b><br>
+                    দিন {{ current_day(p)|bn }} / {{ project_days|bn }}
+                    · মেয়াদ শেষ: {{ p.ends_at.strftime("%d-%m-%Y") }}<br>
+                    <a href="{{ url_for('tasks', purchase=p.id) }}">
+                        আজকের কাজ →
+                    </a>
                 </p>
 
-                <p>
-                    মেয়াদ শেষ:
-                    {{ purchase.ends_at.strftime("%d-%m-%Y") }}
-                </p>
+            {% endfor %}
 
-                <a href="{{ url_for('tasks') }}">
-                    আজকের কাজ →
-                </a>
-
-            {% else %}
-
-                <a href="{{ url_for('buy') }}">
-                    প্রজেক্ট কিনুন →
-                </a>
-
-            {% endif %}
+            <a href="{{ url_for('buy') }}">
+                {{ "আরও প্রজেক্ট কিনুন →" if purchases else "প্রজেক্ট কিনুন →" }}
+            </a>
         </div>
 
         <!-- Withdrawal Card -->
