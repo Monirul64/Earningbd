@@ -53,7 +53,7 @@ PROJECT_PACKAGES = {
 }
 PROJECT_PRICE = Decimal("500.00")
 DAILY_REWARD = PROJECT_PACKAGES["500"] * TASKS_PER_DAY
-WEEKLY_PAYOUT_DAY = os.environ.get("WEEKLY_PAYOUT_DAY", "Sunday")
+WEEKLY_PAYOUT_DAY = os.environ.get("WEEKLY_PAYOUT_DAY", "Thursday")
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
