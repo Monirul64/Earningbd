@@ -203,6 +203,40 @@ def active_purchase(user_id):
     now = datetime.utcnow()
     return Purchase.query.filter_by(user_id=user_id, status="active").filter(Purchase.ends_at > now).order_by(Purchase.ends_at.desc()).first()
 
+def active_purchases(user_id):
+    """ইউজারের সব সক্রিয় প্রজেক্ট (পুরনো আগে)"""
+    now = datetime.utcnow()
+    return (Purchase.query.filter_by(user_id=user_id, status="active")
+            .filter(Purchase.ends_at > now).order_by(Purchase.starts_at.asc(), Purchase.id.asc()).all())
+
+def pick_purchase(user_id, task=None, requested_id=None):
+    """কোন প্রজেক্টের কাজ দেখানো/জমা হবে তা বেছে নেয়।
+    ?purchase=<id> দিলে সেটি; না দিলে প্রথম যে প্রজেক্টে আজকের কাজ বাকি আছে।"""
+    purchases = active_purchases(user_id)
+    if not purchases:
+        return None
+    if requested_id:
+        for p in purchases:
+            if p.id == requested_id:
+                return p
+        return None
+    for p in purchases:
+        day = current_day(p)
+        if day > PROJECT_DAYS:
+            continue
+        if task is not None:
+            if task.day_number != day:
+                continue
+            done = TaskSubmission.query.filter_by(user_id=user_id, purchase_id=p.id, task_id=task.id).first()
+            if not done:
+                return p
+        else:
+            day_tasks = Task.query.filter_by(day_number=day, is_active=True).all()
+            done_ids = {x.task_id for x in TaskSubmission.query.filter_by(user_id=user_id, purchase_id=p.id).all()}
+            if any(t.id not in done_ids for t in day_tasks):
+                return p
+    return purchases[0]
+
 def current_day(purchase):
     if not purchase or not purchase.starts_at:
         return 0
@@ -220,6 +254,7 @@ def bn(value):
         text = str(value)
     return text.translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯"))
 app.jinja_env.filters["bn"] = bn
+app.jinja_env.globals["current_day"] = current_day
 
 @app.context_processor
 def globals_for_templates():
@@ -311,18 +346,16 @@ def reset_password(token):
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    purchase = active_purchase(current_user.id)
+    purchases = active_purchases(current_user.id)
+    purchase = purchases[0] if purchases else None
     recent = TaskSubmission.query.filter_by(user_id=current_user.id).order_by(TaskSubmission.created_at.desc()).limit(10).all()
     payouts = Payout.query.filter_by(user_id=current_user.id).order_by(Payout.created_at.desc()).limit(5).all()
-    return render_template("dashboard.html", purchase=purchase, day=current_day(purchase), balance=user_balance(current_user.id), recent=recent, payouts=payouts)
+    return render_template("dashboard.html", purchase=purchase, purchases=purchases, day=current_day(purchase), balance=user_balance(current_user.id), recent=recent, payouts=payouts)
 
 @app.route("/buy", methods=["GET","POST"])
 @login_required
 def buy():
     form = PurchaseForm()
-    if active_purchase(current_user.id):
-        flash("আপনার ইতিমধ্যে সক্রিয় প্রজেক্ট আছে।", "error")
-        return redirect(url_for("dashboard"))
     if form.validate_on_submit():
         selected_price = form.package_price.data
         if selected_price not in PROJECT_PACKAGES:
@@ -358,9 +391,6 @@ def buy_package(price):
     """নির্বাচিত প্যাকেজ কেনার আলাদা পেজ (এখনই কিনুন বাটন থেকে আসে)"""
     if price not in PROJECT_PACKAGES:
         abort(404)
-    if active_purchase(current_user.id):
-        flash("আপনার ইতিমধ্যে সক্রিয় প্রজেক্ট আছে।", "error")
-        return redirect(url_for("dashboard"))
     form = PurchaseForm()
     form.package_price.data = price  # URL এর প্যাকেজই ব্যবহার হবে
     if form.validate_on_submit():
@@ -375,7 +405,8 @@ def buy_package(price):
 @app.route("/tasks")
 @login_required
 def tasks():
-    purchase = active_purchase(current_user.id)
+    purchases = active_purchases(current_user.id)
+    purchase = pick_purchase(current_user.id, requested_id=request.args.get("purchase", type=int))
     if not purchase:
         flash("টাস্ক দেখতে আগে প্রজেক্ট কিনে Admin অনুমোদন নিতে হবে।", "error")
         return redirect(url_for("buy"))
@@ -385,7 +416,7 @@ def tasks():
         return redirect(url_for("dashboard"))
     task_list = Task.query.filter_by(day_number=day, is_active=True).order_by(Task.task_number).all()
     submitted = {s.task_id for s in TaskSubmission.query.filter_by(user_id=current_user.id, purchase_id=purchase.id).all()}
-    return render_template("tasks.html", purchase=purchase, day=day, tasks=task_list, submitted=submitted)
+    return render_template("tasks.html", purchase=purchase, purchases=purchases, day=day, tasks=task_list, submitted=submitted)
 
 
 
@@ -393,15 +424,15 @@ def tasks():
 @app.route("/tasks/<int:task_id>/submit", methods=["GET", "POST"])
 @login_required
 def submit_task(task_id):
-    purchase = active_purchase(current_user.id)
-
-    if not purchase:
-        abort(403)
-
     task = Task.query.filter_by(
         id=task_id,
         is_active=True
     ).first_or_404()
+
+    purchase = pick_purchase(current_user.id, task=task, requested_id=request.args.get("purchase", type=int))
+
+    if not purchase:
+        abort(403)
 
     if task.day_number != current_day(purchase):
         abort(403)
@@ -414,7 +445,7 @@ def submit_task(task_id):
 
     if existing:
         flash("এই কাজটি ইতিমধ্যে জমা দিয়েছেন।", "error")
-        return redirect(url_for("tasks"))
+        return redirect(url_for("tasks", purchase=purchase.id))
 
     form = ProofForm()
 
@@ -454,7 +485,7 @@ def submit_task(task_id):
                 "success"
             )
 
-            return redirect(url_for("tasks"))
+            return redirect(url_for("tasks", purchase=purchase.id))
 
         except Exception:
             db.session.rollback()
