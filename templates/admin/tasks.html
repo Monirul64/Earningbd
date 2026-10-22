@@ -1,1 +1,93 @@
-{% extends "base.html" %}{% block content %}<div class="pagehead"><h1>দৈনিক টাস্ক তৈরি</h1><p class="muted">প্রতিটি দিনের জন্য টাস্ক ১ থেকে ৫ পর্যন্ত তৈরি করুন।</p></div><form method="post" class="formcard adminform"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>দিন (১–১২০)<input class="input" name="day" type="number" min="1" max="120" required></label><label>টাস্ক নম্বর (১–৫)<input class="input" name="num" type="number" min="1" max="5" required></label><label>শিরোনাম<input class="input" name="title" required maxlength="140"></label><label>বর্ণনা<textarea class="input textarea" name="description" required></textarea></label><button class="btn">টাস্ক তৈরি করুন</button></form><div class="tablewrap"><table><tr><th>দিন</th><th>নম্বর</th><th>শিরোনাম</th><th>অবস্থা</th></tr>{% for t in tasks %}<tr><td>{{ t.day_number }}</td><td>{{ t.task_number }}</td><td>{{ t.title }}</td><td>{{ "চালু" if t.is_active else "বন্ধ" }}</td></tr>{% endfor %}</table></div>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="pagehead">
+    <h1>দৈনিক টাস্ক তৈরি</h1>
+    <p class="muted">
+        প্রতিটি দিনের জন্য টাস্ক ১ থেকে ৫ পর্যন্ত তৈরি করুন।
+    </p>
+</div>
+
+<form method="post" class="formcard adminform">
+
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
+
+    <label>
+        দিন (১–১২০)
+        <input
+            class="input"
+            name="day"
+            type="number"
+            min="1"
+            max="120"
+            required
+        >
+    </label>
+
+    <label>
+        টাস্ক নম্বর (১–৫)
+        <input
+            class="input"
+            name="num"
+            type="number"
+            min="1"
+            max="5"
+            required
+        >
+    </label>
+
+    <label>
+        শিরোনাম
+        <input
+            class="input"
+            name="title"
+            required
+            maxlength="140"
+        >
+    </label>
+
+    <label>
+        বর্ণনা
+        <textarea
+            class="input textarea"
+            name="description"
+            required
+        ></textarea>
+    </label>
+
+    <button class="btn">
+        টাস্ক তৈরি করুন
+    </button>
+
+</form>
+
+<div class="tablewrap">
+    <table>
+        <tr>
+            <th>দিন</th>
+            <th>নম্বর</th>
+            <th>শিরোনাম</th>
+            <th>অবস্থা</th>
+        </tr>
+
+        {% for t in tasks %}
+        <tr>
+            <td>{{ t.day_number }}</td>
+            <td>{{ t.task_number }}</td>
+            <td>{{ t.title }}</td>
+            <td>
+                {{ "চালু" if t.is_active else "বন্ধ" }}
+            </td>
+        </tr>
+        {% endfor %}
+
+    </table>
+</div>
+
+{% endblock %}
