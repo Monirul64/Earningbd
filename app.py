@@ -40,8 +40,13 @@ TASKS_PER_DAY = 5
 PROJECT_PACKAGES = {
     "500": Decimal("10.00"),
     "1000": Decimal("20.00"),
+    "1500": Decimal("30.00"),    # নতুন - রেট নিজে ঠিক করে নিন
+    "2000": Decimal("40.00"),    # নতুন - রেট নিজে ঠিক করে নিন
     "2500": Decimal("60.00"),
+    "3000": Decimal("60.00"),    # নতুন - রেট নিজে ঠিক করে নিন
+    "4000": Decimal("80.00"),    # নতুন - রেট নিজে ঠিক করে নিন
     "5000": Decimal("140.00"),
+    "7500": Decimal("150.00"),   # নতুন - রেট নিজে ঠিক করে নিন
     "10000": Decimal("200.00"),
     "15000": Decimal("300.00"),
     "20000": Decimal("400.00"),
@@ -143,9 +148,16 @@ class ResetForm(FlaskForm):
     submit = SubmitField("পাসওয়ার্ড পরিবর্তন করুন")
 
 class PurchaseForm(FlaskForm):
-    package_price = SelectField("প্রজেক্ট প্যাকেজ", choices=[(price, f"৳{int(price):,} — প্রতি অনুমোদিত টাস্ক ৳{reward}") 
-                    for price, reward in [("500", "50"), ("1000", "100"), ("2500", "300"), ("5000", "700"), ("10000", "1000"), ("15000", "1400"),
-                                       ("20000", "2000")]], validators=[DataRequired()])
+    # ---- আগের কোড (রেখে দেওয়া হলো, মুছে ফেলা হয়নি) ----
+    # package_price = SelectField("প্রজেক্ট প্যাকেজ", choices=[(price, f"৳{int(price):,} — প্রতি অনুমোদিত টাস্ক ৳{reward}") 
+    #                 for price, reward in [("500", "50"), ("1000", "100"), ("2500", "300"), ("5000", "700"), ("10000", "1000"), ("15000", "1400"),
+    #                                    ("20000", "2000")]], validators=[DataRequired()])
+    # ---- নতুন: ১২টি প্যাকেজ (PROJECT_PACKAGES থেকে) ----
+    package_price = SelectField(
+        "প্রজেক্ট প্যাকেজ",
+        choices=[(price, f"৳{int(price):,} প্যাকেজ") for price in PROJECT_PACKAGES],
+        validators=[DataRequired()]
+    )
     method = SelectField("পেমেন্ট মাধ্যম", choices=[("bKash","bKash"),("Nagad","Nagad"),("Rocket","Rocket"),("Upay","Upay")], validators=[DataRequired()])
     reference = StringField("Transaction ID / রেফারেন্স", validators=[DataRequired(), Length(min=4, max=120)])
     submit = SubmitField("কেনার অনুরোধ দিন")
@@ -199,6 +211,15 @@ def current_day(purchase):
 def money(value):
     return f"৳{Decimal(str(value or 0)):,.2f}"
 app.jinja_env.filters["money"] = money
+
+def bn(value):
+    """সংখ্যাকে বাংলা অঙ্কে রূপান্তর (যেমন 20000 -> ২০,০০০)"""
+    try:
+        text = f"{int(value):,}"
+    except (TypeError, ValueError):
+        text = str(value)
+    return text.translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯"))
+app.jinja_env.filters["bn"] = bn
 
 @app.context_processor
 def globals_for_templates():
@@ -313,7 +334,36 @@ def buy():
         db.session.commit()
         flash("কেনার অনুরোধ জমা হয়েছে। Admin পেমেন্ট যাচাই করে অনুমোদন করবেন।", "success")
         return redirect(url_for("dashboard"))
-    return render_template("buy.html", form=form)
+    # "এখনই কিনুন" বাটন থেকে আসা ?package=... আগে থেকে সিলেক্ট করা
+    if request.method == "GET":
+        chosen = request.args.get("package", "")
+        if chosen in PROJECT_PACKAGES:
+            form.package_price.data = chosen
+    packages = [{"price": price} for price in PROJECT_PACKAGES]
+    payouts = Payout.query.filter_by(user_id=current_user.id).order_by(Payout.created_at.desc()).limit(5).all()
+    return render_template("buy.html", form=form, packages=packages,
+                           selected=form.package_price.data or "",
+                           balance=user_balance(current_user.id), payouts=payouts)
+
+@app.route("/buy/<price>", methods=["GET", "POST"])
+@login_required
+def buy_package(price):
+    """নির্বাচিত প্যাকেজ কেনার আলাদা পেজ (এখনই কিনুন বাটন থেকে আসে)"""
+    if price not in PROJECT_PACKAGES:
+        abort(404)
+    if active_purchase(current_user.id):
+        flash("আপনার ইতিমধ্যে সক্রিয় প্রজেক্ট আছে।", "error")
+        return redirect(url_for("dashboard"))
+    form = PurchaseForm()
+    form.package_price.data = price  # URL এর প্যাকেজই ব্যবহার হবে
+    if form.validate_on_submit():
+        purchase = Purchase(user_id=current_user.id, price=Decimal(price), payment_method=form.method.data,
+                            payment_reference=form.reference.data.strip(), status="pending")
+        db.session.add(purchase)
+        db.session.commit()
+        flash("কেনার অনুরোধ জমা হয়েছে। Admin পেমেন্ট যাচাই করে অনুমোদন করবেন।", "success")
+        return redirect(url_for("dashboard"))
+    return render_template("checkout.html", form=form, price=price)
 
 @app.route("/tasks")
 @login_required
@@ -669,6 +719,6 @@ def init_db():
     db.session.commit()
 
 
+
 with app.app_context():
     init_db()
-
