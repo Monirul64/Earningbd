@@ -1,14 +1,15 @@
-
 {% extends "base.html" %}
 
 {% block content %}
 
-<section class="formwrap">
+<section class="formwrap buywrap">
 
     <!-- Page Header -->
-    <span class="eyebrow">PROJECT ACCESS</span>
+    <div class="buyhead">
+        <span class="eyebrow">PROJECT ACCESS</span>
 
-    <h1>প্রজেক্ট কিনুন</h1>
+        <h1>প্রজেক্ট কিনুন</h1>
+    </div>
 
     <!-- Project Price Box -->
     <div class="pricebox">
@@ -25,91 +26,43 @@
     </div>
 
     <!-- Package Rates -->
-    <div class="card">
 
-        <h3>প্যাকেজ ও প্রতি টাস্কের উদাহরণ রেট</h3>
 
-        <p>
-            ৳৫০০ → ৳৫০ ·
-            ৳১,০০০ → ৳১০০ ·
-            ৳২,৫০০ → ৳৩০০ ·
-            ৳৫,০০০ → ৳৭০০ ·
-            ৳১০,০০০ → ৳১,০০০ ·
-            ৳১৫,০০০ → ৳১,৪০০ ·
-            ৳২০,০০০ → ৳২,০০০
-        </p>
+    <div class="pkg-grid">
 
-        <p class="muted">
-            শুধু Admin অনুমোদিত কাজের জন্য প্রযোজ্য।
-            এগুলো নিশ্চিত আয় নয়; বাস্তব আয় ও পর্যাপ্ত
-            তহবিলের ওপর নির্ভরশীল।
-        </p>
+        {% for p in packages %}
 
-    </div>
+        <div class="card pkg-card {{ 'selected' if p.price == selected else '' }}">
 
-    <!-- Payment Instructions -->
-    <p class="muted">
-         📢 পেমেন্ট সংক্রান্ত গুরুত্বপূর্ণ নির্দেশনা 💸<br>
-       ✅ টাকা পাঠানোর সময় অবশ্যই Send Money অপশন ব্যবহার করবেন।   <br>
-       🧾 টাকা পাঠানোর পর আপনার Transaction ID (TrxID) সংগ্রহ করে রাখবেন। পেমেন্ট ভেরিফিকেশনের জন্য Transaction ID জমা দিতে হবে।   <br>
-      ⚠️ সতর্কতা: সঠিক নম্বরে টাকা পাঠান এবং Transaction ID দেওয়ার আগে ভালোভাবে যাচাই করুন।  <br>
-         ❤️ ধন্যবাদ — Earning BD-এর সঙ্গে থাকার জন্য। 
-    </p>
+            <!-- Laptop Picture -->
+            <div class="pkg-img">
+                <img src="{{ url_for('static', filename='laptop.svg') }}"
+                     alt="প্রজেক্ট {{ loop.index|bn }} ল্যাপটপ"
+                     loading="lazy">
+            </div>
 
-    <!-- Payment Methods -->
-    <div class="card">
+            <span class="muted pkg-name">প্রজেক্ট {{ loop.index|bn }}</span>
 
-        <p>
-            <strong>বিকাশ:</strong> 017XXXXXXXX
-        </p>
+            <h2>৳{{ p.price|bn }}</h2>
 
-        <p>
-            <strong>নগদ:</strong> 017XXXXXXXX
-        </p>
+            <ul class="pkg-info">
+                <li>{{ project_days|bn }} দিনের অ্যাক্সেস</li>
+                <li>প্রতিদিন {{ tasks_per_day|bn }}টি কাজের স্লট</li>
+                <li>Admin যাচাইয়ের পর সক্রিয়</li>
+            </ul>
 
-        <p>
-            <strong>রকেট:</strong> 017XXXXXXXX
-        </p>
-        
-        <p>
-            <strong>উপায়:</strong> 017XXXXXXXX
-        </p>
+            <!-- Buy Now Button -->
+            <a class="btn full"
+               href="{{ url_for('buy_package', price=p.price) }}">
+                এখনই কিনুন
+            </a>
 
-    </div>
-
-    <!-- Project Purchase Form -->
-    <form class="formcard" method="post">
-
-        {{ form.hidden_tag() }}
-
-        {% for f in [
-            form.package_price,
-            form.method,
-            form.reference
-        ] %}
-
-            <label>
-
-                {{ f.label }}
-
-                {{ f(class_="input") }}
-
-                {% for e in f.errors %}
-
-                    <small class="error">
-                        {{ e }}
-                    </small>
-
-                {% endfor %}
-
-            </label>
+        </div>
 
         {% endfor %}
 
-        <!-- Submit Button -->
-        {{ form.submit(class_="btn full") }}
+    </div>
 
-    </form>
 
 </section>
 
