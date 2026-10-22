@@ -14,61 +14,81 @@
         <!-- Current Balance Card -->
         <div class="card" style="border-left: 4px solid #4f46e5;">
             <span class="muted">বর্তমান ব্যালেন্স (Current Balance)</span>
-            <h2 style="font-size: 2rem; color: #4f46e5; margin: 10px 0;">{{ balance|money }}</h2>
+            <h2 style="font-size: 2.2rem; color: #4f46e5; margin: 10px 0; font-weight: 700;">{{ balance|money }}</h2>
             <a href="{{ url_for('withdraw') }}" class="btn small" style="margin-top: 10px; display: inline-block;">
-                উত্তোলন করুন →
+                উত্তোলনের অনুরোধ →
             </a>
         </div>
 
         <!-- Today's Income Card -->
         <div class="card" style="border-left: 4px solid #10b981;">
             <span class="muted">আজকের আয় (Today's Income)</span>
-            <h2 style="font-size: 2rem; color: #10b981; margin: 10px 0;">+{{ today_income|money }}</h2>
-            <p class="muted" style="font-size: 0.85rem; margin: 0;">আজকের অনুমোদিত কাজ থেকে আয়</p>
+            <h2 style="font-size: 2.2rem; color: #10b981; margin: 10px 0; font-weight: 700;">+{{ today_income|money }}</h2>
+            <p class="muted" style="font-size: 0.85rem; margin: 0;">আজকের অনুমোদিত কাজ থেকে মোট আয়</p>
         </div>
 
         <!-- Total Withdraw Card -->
         <div class="card" style="border-left: 4px solid #8b5cf6;">
             <span class="muted">মোট উত্তোলন (Total Withdraw)</span>
-            <h2 style="font-size: 2rem; color: #8b5cf6; margin: 10px 0;">{{ total_withdraw|money }}</h2>
-            <p class="muted" style="font-size: 0.85rem; margin: 0;">সফলভাবে পরিশোধিত টাকা</p>
+            <h2 style="font-size: 2.2rem; color: #8b5cf6; margin: 10px 0; font-weight: 700;">{{ total_withdraw|money }}</h2>
+            <p class="muted" style="font-size: 0.85rem; margin: 0;">সফলভাবে পরিশোধিত মোট টাকা</p>
         </div>
 
     </div>
 
-    <!-- Active Projects Section -->
-    <div class="card" style="margin-bottom: 30px;">
-        <span class="muted">সক্রিয় প্রজেক্ট</span>
-        <h3 style="margin-top: 5px;">
-            {% if purchases %}সক্রিয় ({{ purchases|length|bn }}টি){% else %}কোনো প্রজেক্ট চালু নেই{% endif %}
-        </h3>
+    <!-- Projects Section Header & Add Button -->
+    <div class="sectionhead" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2>আপনার সক্রিয় প্রজেক্টসমূহ</h2>
+        <a href="{{ url_for('buy') }}" class="btn small secondary">
+            {{ "+ নতুন প্রজেক্ট কিনুন" if purchases else "+ প্রজেক্ট কিনুন" }}
+        </a>
+    </div>
 
-        {% for p in purchases %}
-            <div style="padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px; margin-top: 10px;">
-                <p style="margin: 0;">
-                    <b>প্রজেক্ট {{ loop.index|bn }} · {{ p.price|money }}</b><br>
-                    দিন {{ current_day(p)|bn }} / {{ project_days|bn }}
-                    · মেয়াদ শেষ: {{ p.ends_at.strftime("%d-%m-%Y") }}<br>
-                    <a href="{{ url_for('tasks', purchase=p.id) }}" style="font-weight: bold; margin-top: 5px; display: inline-block;">
-                        আজকের কাজ করুন →
-                    </a>
-                </p>
+    <!-- Projects Grid (Balance Card design accent in div) -->
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 35px;">
+
+        {% if purchases %}
+            {% for p in purchases %}
+                <div class="card" style="border-left: 4px solid #f59e0b; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="muted" style="font-weight: 600;">প্রজেক্ট {{ loop.index|bn }}</span>
+                            <span style="background: #fef3c7; color: #b45309; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold;">সক্রিয়</span>
+                        </div>
+                        <h2 style="font-size: 1.8rem; color: #1f2937; margin: 5px 0; font-weight: 700;">
+                            {{ p.price|money }}
+                        </h2>
+                        <div style="margin: 12px 0; font-size: 0.9rem; color: #4b5563; line-height: 1.6;">
+                            <div><b>অগ্রগতি:</b> দিন {{ current_day(p)|bn }} / {{ project_days|bn }}</div>
+                            <div><b>মেয়াদ শেষ:</b> {{ p.ends_at.strftime("%d-%m-%Y") }}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; border-top: 1px solid #f3f4f6; pt: 12px;">
+                        <a href="{{ url_for('tasks', purchase=p.id) }}" class="btn small" style="width: 100%; text-align: center; display: block; background: #f59e0b; border-color: #f59e0b; color: #fff;">
+                            আজকের কাজ করুন →
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <!-- Empty State Div Card -->
+            <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 35px 20px; border-left: 4px solid #9ca3af;">
+                <span class="muted" style="font-size: 1rem; display: block; margin-bottom: 10px;">আপনার কোনো সক্রিয় প্রজেক্ট নেই</span>
+                <p style="color: #6b7280; margin-bottom: 15px; font-size: 0.9rem;">কাজ শুরু করতে এখনই আপনার পছন্দের প্রজেক্ট প্যাকেজটি কিনুন।</p>
+                <a href="{{ url_for('buy') }}" class="btn small" style="display: inline-block;">
+                    প্রজেক্ট কিনতে ক্লিক করুন →
+                </a>
             </div>
-        {% endfor %}
+        {% endif %}
 
-        <div style="margin-top: 15px;">
-            <a href="{{ url_for('buy') }}" class="btn small secondary">
-                {{ "আরও প্রজেক্ট কিনুন →" if purchases else "প্রজেক্ট কিনুন →" }}
-            </a>
-        </div>
     </div>
 
     <!-- Withdraw History Section -->
     <div class="sectionhead">
-        <h2>উত্তোলন হিস্টোরি (Withdraw History)</h2>
+        <h2>উত্তোলনের হিস্টোরি (Withdraw History)</h2>
     </div>
 
-    <div class="tablewrap" style="margin-bottom: 30px;">
+    <div class="tablewrap" style="margin-bottom: 35px;">
         <table>
             <thead>
                 <tr>
@@ -88,17 +108,17 @@
                         <td><b>{{ p.amount|money }}</b></td>
                         <td>
                             {% if p.status == 'paid' %}
-                                <span class="status" style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px;">পেমেন্ট সম্পন্ন (Paid)</span>
+                                <span class="status" style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px;">পেমেন্ট সম্পন্ন</span>
                             {% elif p.status == 'pending' %}
-                                <span class="status" style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px;">অপেক্ষমাণ (Pending)</span>
+                                <span class="status" style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px;">অপেক্ষমাণ</span>
                             {% else %}
-                                <span class="status" style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px;">বাতিল (Rejected)</span>
+                                <span class="status" style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px;">বাতিল</span>
                             {% endif %}
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="5" style="text-center; color: #888;">
+                        <td colspan="5" style="text-align: center; color: #888;">
                             এখনো কোনো উত্তোলনের হিস্টোরি নেই।
                         </td>
                     </tr>
@@ -138,7 +158,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="3" style="text-center; color: #888;">
+                        <td colspan="3" style="text-align: center; color: #888;">
                             এখনো কোনো কাজ জমা নেই।
                         </td>
                     </tr>
