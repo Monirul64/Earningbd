@@ -339,7 +339,14 @@ def buy():
         chosen = request.args.get("package", "")
         if chosen in PROJECT_PACKAGES:
             form.package_price.data = chosen
-    packages = [{"price": price} for price in PROJECT_PACKAGES]
+    packages = [
+        {
+            "price": price,
+            "daily": reward * TASKS_PER_DAY,
+            "total": reward * TASKS_PER_DAY * PROJECT_DAYS,
+        }
+        for price, reward in PROJECT_PACKAGES.items()
+    ]
     payouts = Payout.query.filter_by(user_id=current_user.id).order_by(Payout.created_at.desc()).limit(5).all()
     return render_template("buy.html", form=form, packages=packages,
                            selected=form.package_price.data or "",
