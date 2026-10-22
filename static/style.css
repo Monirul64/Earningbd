@@ -689,3 +689,186 @@ footer {
         animation-duration: 0.01ms !important;
     }
 }
+
+/* =========================
+   18. BUY PAGE (12 PACKAGES)
+========================= */
+
+/* PC te full width: container er bahire jete dey */
+.formwrap.buywrap {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1280px, calc(100vw - 32px));
+    max-width: none;
+    margin: 40px 0 70px;
+    padding: 0;
+}
+
+.buyhead {
+    text-align: center;
+}
+
+.buywrap .pricebox {
+    text-align: center;
+}
+
+/* Package grid: PC 4, laptop 3, tablet/mobile 2 */
+.pkg-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin: 26px 0 40px;
+}
+
+.pkg-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 16px;
+}
+
+.pkg-card h2 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.pkg-card.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(233, 189, 89, 0.25);
+}
+
+.pkg-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 16 / 10;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background:
+        radial-gradient(circle at 50% 0%, #302515 0%, transparent 70%),
+        #0f1014;
+    overflow: hidden;
+}
+
+.pkg-img img {
+    width: 88%;
+    height: 88%;
+    object-fit: contain;
+    transition: transform var(--transition);
+}
+
+.pkg-card:hover .pkg-img img {
+    transform: scale(1.05);
+}
+
+.pkg-name {
+    font-size: 13px;
+}
+
+.pkg-info {
+    flex: 1;
+    margin: 6px 0 10px;
+    padding: 0;
+    list-style: none;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.pkg-info li::before {
+    content: "✓ ";
+    color: var(--green);
+}
+
+.pkg-card .btn.full {
+    margin-top: auto;
+}
+
+/* Payment + form area (centered, narrow) */
+.payarea {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+#order-form {
+    scroll-margin-top: 90px;
+}
+
+@media (max-width: 1100px) {
+    .pkg-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 750px) {
+    .formwrap.buywrap {
+        width: calc(100vw - 24px);
+        margin-top: 28px;
+    }
+
+    .pkg-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 520px) {
+    .pkg-card {
+        padding: 10px;
+    }
+
+    .pkg-card h2 {
+        font-size: 20px;
+    }
+
+    .pkg-name {
+        font-size: 12px;
+    }
+
+    .pkg-info {
+        font-size: 11.5px;
+        line-height: 1.55;
+    }
+
+    .pkg-card .btn.full {
+        min-height: 40px;
+        padding: 8px 6px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 340px) {
+    .pkg-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================
+   19. CHECKOUT PAGE
+========================= */
+.checkout .eyebrow {
+    display: block;
+    text-align: center;
+}
+
+.checkout-pkg {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.checkout-pkg .pkg-img {
+    max-width: 280px;
+    margin: 0 auto 12px;
+}
+
+.checkout-pkg h2 {
+    margin: 4px 0;
+}
+
+.checkout-pkg p {
+    margin: 4px 0 12px;
+}
