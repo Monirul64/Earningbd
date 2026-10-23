@@ -5,19 +5,23 @@
    1. ROOT & GLOBAL
 ========================= */
 :root {
-    --bg: #090a0d;
-    --panel: #14161b;
-    --panel-light: #1b1d24;
-    --line: #30323a;
+    --bg: #0b0f1a;
+    --panel: #111827;
+    --panel-light: #172033;
+    --line: #263047;
 
-    --gold: #e9bd59;
-    --gold2: #ffe4a1;
+    --gold: #d9b26a;
+    --gold2: #f3dcaa;
 
-    --text: #f4f2ed;
-    --muted: #a7a8b0;
+    --text: #eef1f7;
+    --muted: #9aa4b8;
 
-    --green: #6ce0a4;
-    --red: #ff7b82;
+    --green: #4fd1a1;
+    --red: #f27a86;
+
+    --blue: #6ea8fe;
+    --violet: #a78bfa;
+    --amber: #f0b35a;
 
     --radius: 12px;
     --shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
@@ -37,7 +41,7 @@ body {
     background:
         radial-gradient(
             ellipse at 75% -10%,
-            #302515 0%,
+            #1c2438 0%,
             transparent 42%
         ),
         var(--bg);
@@ -86,7 +90,7 @@ header {
     top: 0;
     z-index: 100;
 
-    background: rgba(11, 12, 14, 0.93);
+    background: rgba(10, 14, 24, 0.93);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
@@ -107,7 +111,7 @@ nav {
 
 nav a,
 nav button {
-    color: #dddddf;
+    color: #dfe4ee;
     transition: color var(--transition);
 }
 
@@ -225,7 +229,7 @@ h3 {
     color: #17130a;
     filter: brightness(1.08);
     transform: translateY(-1px);
-    box-shadow: 0 5px 16px rgba(233, 189, 89, 0.12);
+    box-shadow: 0 5px 16px rgba(217, 178, 106, 0.12);
 }
 
 .btn:active {
@@ -245,7 +249,7 @@ button:focus-visible {
 }
 
 .btn.secondary:hover {
-    background: rgba(233, 189, 89, 0.08);
+    background: rgba(217, 178, 106, 0.08);
     color: var(--gold2);
 }
 
@@ -281,8 +285,8 @@ button:focus-visible {
 
     background: linear-gradient(
         145deg,
-        #181a20,
-        #111216
+        #152033,
+        #0e1626
     );
 }
 
@@ -294,7 +298,7 @@ button:focus-visible {
 
 .card:hover {
     transform: translateY(-3px);
-    border-color: #55503e;
+    border-color: #3f4c6b;
 }
 
 .card h2 {
@@ -358,12 +362,12 @@ button:focus-visible {
     width: 100%;
     min-height: 44px;
 
-    border: 1px solid #3b3d45;
+    border: 1px solid #2e3a54;
     border-radius: 8px;
 
     padding: 10px 12px;
 
-    background: #0b0c10;
+    background: #0a0f1b;
     color: var(--text);
 
     font: 14px 'Hind Siliguri', sans-serif;
@@ -374,13 +378,13 @@ button:focus-visible {
 }
 
 .input::placeholder {
-    color: #777982;
+    color: #6b758c;
 }
 
 .input:focus {
     outline: none;
     border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(233, 189, 89, 0.10);
+    box-shadow: 0 0 0 3px rgba(217, 178, 106, 0.10);
 }
 
 .input:disabled {
@@ -451,15 +455,15 @@ input[type="radio"] {
     margin: 15px 0;
 
     border-radius: 8px;
-    border: 1px solid #355b42;
+    border: 1px solid #25594a;
 
-    background: #1b2820;
+    background: #10231f;
     color: var(--green);
 }
 
 .flash.error {
-    background: #2b191b;
-    border-color: #67353a;
+    background: #2a1620;
+    border-color: #6a3340;
     color: var(--red);
 }
 
@@ -492,7 +496,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     min-width: 600px;
-    background: #111216;
+    background: #0e1626;
 }
 
 th,
@@ -507,7 +511,7 @@ td {
 
 th {
     color: var(--gold);
-    background: #191b20;
+    background: #142036;
     font-weight: 600;
     white-space: nowrap;
 }
@@ -564,11 +568,11 @@ tr:last-child td {
     margin-top: 20px;
     padding: 16px;
 
-    border: 1px solid #373126;
+    border: 1px solid #3a3629;
     border-left: 4px solid var(--gold);
     border-radius: 10px;
 
-    background: #15140f;
+    background: #131722;
     font-size: 14px;
 }
 
@@ -591,7 +595,7 @@ footer {
 
     border-top: 1px solid var(--line);
 
-    color: #777982;
+    color: #6b758c;
     text-align: center;
     font-size: 12px;
 }
@@ -737,7 +741,7 @@ footer {
 
 .pkg-card.selected {
     border-color: var(--gold);
-    box-shadow: 0 0 0 2px rgba(233, 189, 89, 0.25);
+    box-shadow: 0 0 0 2px rgba(217, 178, 106, 0.25);
 }
 
 .pkg-img {
@@ -748,8 +752,8 @@ footer {
     margin-bottom: 8px;
     border-radius: 10px;
     background:
-        radial-gradient(circle at 50% 0%, #302515 0%, transparent 70%),
-        #0f1014;
+        radial-gradient(circle at 50% 0%, #1c2438 0%, transparent 70%),
+        #0c1220;
     overflow: hidden;
 }
 
@@ -911,5 +915,104 @@ footer {
     }
     .pkg-earn b {
         font-size: 12px;
+    }
+}
+
+/* =========================
+   21. REFERRAL SECTION
+========================= */
+.refbox {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 22px;
+    margin: 14px 0 22px;
+    padding: 24px;
+
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+    border-radius: 14px;
+
+    background:
+        radial-gradient(circle at 100% 0%, rgba(217, 178, 106, 0.10) 0%, transparent 55%),
+        linear-gradient(145deg, #152033, #0e1626);
+}
+
+.refbox h3 {
+    margin: 8px 0 6px;
+    font-size: 22px;
+    color: var(--text);
+}
+
+.refbox p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.reflabel {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.refcopy {
+    display: flex;
+    gap: 8px;
+}
+
+.refcopy .input {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+}
+
+.refcode-row {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.refcode-row code {
+    padding: 3px 10px;
+    border: 1px dashed var(--gold);
+    border-radius: 6px;
+    color: var(--gold2);
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.refstats {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.refstat {
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.refstat span {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.refstat strong {
+    font: 700 24px Inter, sans-serif;
+    color: var(--green);
+}
+
+.refstat.count strong {
+    color: var(--blue);
+}
+
+@media (max-width: 750px) {
+    .refbox {
+        grid-template-columns: 1fr;
+        padding: 18px;
     }
 }
