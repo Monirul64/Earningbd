@@ -53,6 +53,7 @@ PROJECT_PACKAGES = {
 PROJECT_PRICE = Decimal("500.00")
 DAILY_REWARD = PROJECT_PACKAGES["500"] * TASKS_PER_DAY
 WEEKLY_PAYOUT_DAY = os.environ.get("WEEKLY_PAYOUT_DAY", "Sunday")
+REFERRAL_BONUS = Decimal("100.00")  # প্রতিটি সফল রেফারে রেফারার পাবে
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -63,6 +64,9 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     reset_token_hash = db.Column(db.String(64), nullable=True, index=True)
     reset_token_expires = db.Column(db.DateTime, nullable=True)
+    referral_code = db.Column(db.String(12), unique=True, nullable=True, index=True)
+    referred_by_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True, index=True)
+    referrer = db.relationship("User", remote_side=[id], backref="referrals")
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     def check_password(self, password):
@@ -130,6 +134,7 @@ class SignupForm(FlaskForm):
     email = StringField("ইমেইল", validators=[DataRequired(), Email(), Length(max=120)])
     password = PasswordField("পাসওয়ার্ড (কমপক্ষে ৮ অক্ষর)", validators=[DataRequired(), Length(min=8, max=128)])
     confirm = PasswordField("পাসওয়ার্ড নিশ্চিত করুন", validators=[DataRequired(), EqualTo("password")])
+    referral_code = StringField("রেফারেল কোড (ঐচ্ছিক)", validators=[Optional(), Length(max=12)])
     submit = SubmitField("অ্যাকাউন্ট খুলুন")
 
 class LoginForm(FlaskForm):
@@ -193,6 +198,13 @@ def user_balance(user_id):
     total = db.session.query(func.coalesce(func.sum(Ledger.amount), 0)).filter_by(user_id=user_id).scalar()
     return Decimal(str(total or 0))
 
+def generate_referral_code():
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    while True:
+        code = "".join(secrets.choice(alphabet) for _ in range(8))
+        if not User.query.filter_by(referral_code=code).first():
+            return code
+
 def active_purchase(user_id):
     now = datetime.utcnow()
     return Purchase.query.filter_by(user_id=user_id, status="active").filter(Purchase.ends_at > now).order_by(Purchase.ends_at.desc()).first()
@@ -249,7 +261,8 @@ app.jinja_env.globals["current_day"] = current_day
 @app.context_processor
 def globals_for_templates():
     return {"project_price": PROJECT_PRICE, "project_days": PROJECT_DAYS, "tasks_per_day": TASKS_PER_DAY,
-            "daily_reward": DAILY_REWARD, "weekly_payout_day": WEEKLY_PAYOUT_DAY, "today": date.today()}
+            "daily_reward": DAILY_REWARD, "weekly_payout_day": WEEKLY_PAYOUT_DAY, "today": date.today(),
+            "referral_bonus": REFERRAL_BONUS}
 
 @app.route("/")
 def index():
@@ -260,15 +273,28 @@ def signup():
     if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
     form = SignupForm()
+    if request.method == "GET":
+        ref_from_link = (request.args.get("ref") or "").strip().upper()
+        if ref_from_link:
+            form.referral_code.data = ref_from_link
     if form.validate_on_submit():
         username = form.username.data.strip()
         email = form.email.data.strip().lower()
+        ref_code = (form.referral_code.data or "").strip().upper()
+        referrer = User.query.filter_by(referral_code=ref_code).first() if ref_code else None
         if User.query.filter(func.lower(User.username) == username.lower()).first() or User.query.filter_by(email=email).first():
             flash("ইউজারনেম বা ইমেইল আগে ব্যবহার হয়েছে।", "error")
+        elif ref_code and not referrer:
+            flash("রেফারেল কোডটি সঠিক নয়। ঠিক করুন অথবা ঘরটি খালি রাখুন।", "error")
         else:
-            user = User(username=username, email=email)
+            user = User(username=username, email=email,
+                        referral_code=generate_referral_code(),
+                        referred_by_id=referrer.id if referrer else None)
             user.set_password(form.password.data)
             db.session.add(user)
+            if referrer:
+                db.session.add(Ledger(user_id=referrer.id, amount=REFERRAL_BONUS, kind="referral_bonus",
+                                      description=f"রেফারেল বোনাস: {username} সাইন আপ করেছে"))
             db.session.commit()
             flash("অ্যাকাউন্ট তৈরি হয়েছে। লগইন করুন।", "success")
             return redirect(url_for("login"))
@@ -347,7 +373,18 @@ def dashboard():
     
     recent = TaskSubmission.query.filter_by(user_id=current_user.id).order_by(TaskSubmission.created_at.desc()).limit(10).all()
     payouts = Payout.query.filter_by(user_id=current_user.id).order_by(Payout.created_at.desc()).all()
-    
+
+    # Referral info
+    if not current_user.referral_code:
+        current_user.referral_code = generate_referral_code()
+        db.session.commit()
+    referral_link = url_for("signup", ref=current_user.referral_code, _external=True)
+    referral_query = User.query.filter_by(referred_by_id=current_user.id)
+    referral_count = referral_query.count()
+    referrals = referral_query.order_by(User.created_at.desc()).limit(20).all()
+    referral_earnings = db.session.query(func.coalesce(func.sum(Ledger.amount), 0)).filter(
+        Ledger.user_id == current_user.id, Ledger.kind == "referral_bonus").scalar()
+
     return render_template(
         "dashboard.html",
         purchase=purchase,
@@ -357,7 +394,11 @@ def dashboard():
         today_income=Decimal(str(today_income or 0)),
         total_withdraw=Decimal(str(total_withdraw or 0)),
         recent=recent,
-        payouts=payouts
+        payouts=payouts,
+        referral_link=referral_link,
+        referral_count=referral_count,
+        referrals=referrals,
+        referral_earnings=Decimal(str(referral_earnings or 0))
     )
 
 @app.route("/buy", methods=["GET","POST"])
@@ -701,8 +742,20 @@ def forbidden(_):
 def not_found(_):
     return render_template("error.html", code=404, message="পেজটি পাওয়া যায়নি।"), 404
 
+def ensure_referral_schema():
+    """পুরনো ডাটাবেসে referral কলাম না থাকলে যোগ করে এবং আগের ইউজারদের কোড দেয়।"""
+    from sqlalchemy import inspect, text
+    cols = {c["name"] for c in inspect(db.engine).get_columns("user")}
+    with db.engine.begin() as conn:
+        if "referral_code" not in cols:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN referral_code VARCHAR(12)'))
+        if "referred_by_id" not in cols:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN referred_by_id INTEGER'))
+        conn.execute(text('CREATE UNIQUE INDEX IF NOT EXISTS ix_user_referral_code ON "user" (referral_code)'))
+
 def init_db():
     db.create_all()
+    ensure_referral_schema()
     admin_name = os.environ.get("ADMIN_USER", "admin").strip()
     admin_password = os.environ.get("ADMIN_PASSWORD")
 
@@ -729,6 +782,10 @@ def init_db():
     admin.set_password(admin_password)
 
     db.session.commit()
+
+    for u in User.query.filter(User.referral_code.is_(None)).all():
+        u.referral_code = generate_referral_code()
+        db.session.commit()
 
 with app.app_context():
     init_db()
