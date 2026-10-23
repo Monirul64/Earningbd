@@ -12,26 +12,34 @@
     <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
 
         <!-- Current Balance Card -->
-        <div class="card" style="border-left: 4px solid #4f46e5;">
+        <div class="card" style="border-left: 4px solid var(--blue);">
             <span class="muted">বর্তমান ব্যালেন্স (Current Balance)</span>
-            <h2 style="font-size: 2.2rem; color: #4f46e5; margin: 10px 0; font-weight: 700;">{{ balance|money }}</h2>
+            <h2 style="font-size: 2.2rem; color: var(--blue); margin: 10px 0; font-weight: 700;">{{ balance|money }}</h2>
             <a href="{{ url_for('withdraw') }}" class="btn small" style="margin-top: 10px; display: inline-block;">
                 উত্তোলনের অনুরোধ →
             </a>
         </div>
 
         <!-- Today's Income Card -->
-        <div class="card" style="border-left: 4px solid #10b981;">
+        <div class="card" style="border-left: 4px solid var(--green);">
             <span class="muted">আজকের আয় (Today's Income)</span>
-            <h2 style="font-size: 2.2rem; color: #10b981; margin: 10px 0; font-weight: 700;">+{{ today_income|money }}</h2>
+            <h2 style="font-size: 2.2rem; color: var(--green); margin: 10px 0; font-weight: 700;">+{{ today_income|money }}</h2>
             <p class="muted" style="font-size: 0.85rem; margin: 0;">আজকের অনুমোদিত কাজ থেকে মোট আয়</p>
         </div>
 
         <!-- Total Withdraw Card -->
-        <div class="card" style="border-left: 4px solid #8b5cf6;">
+        <div class="card" style="border-left: 4px solid var(--violet);">
             <span class="muted">মোট উত্তোলন (Total Withdraw)</span>
-            <h2 style="font-size: 2.2rem; color: #8b5cf6; margin: 10px 0; font-weight: 700;">{{ total_withdraw|money }}</h2>
+            <h2 style="font-size: 2.2rem; color: var(--violet); margin: 10px 0; font-weight: 700;">{{ total_withdraw|money }}</h2>
             <p class="muted" style="font-size: 0.85rem; margin: 0;">সফলভাবে পরিশোধিত মোট টাকা</p>
+        </div>
+
+
+        <!-- Referral Income Card -->
+        <div class="card" style="border-left: 4px solid var(--gold);">
+            <span class="muted">রেফারেল আয় (Referral Income)</span>
+            <h2 style="font-size: 2.2rem; color: var(--gold); margin: 10px 0; font-weight: 700;">+{{ referral_earnings|money }}</h2>
+            <p class="muted" style="font-size: 0.85rem; margin: 0;">{{ referral_count|bn }} জনকে রেফার করেছেন</p>
         </div>
 
     </div>
@@ -49,22 +57,22 @@
 
         {% if purchases %}
             {% for p in purchases %}
-                <div class="card" style="border-left: 4px solid #f59e0b; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="card" style="border-left: 4px solid var(--amber); display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span class="muted" style="font-weight: 600;">প্রজেক্ট {{ loop.index|bn }}</span>
-                            <span style="background: #fef3c7; color: #b45309; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold;">সক্রিয়</span>
+                            <span style="background: rgba(240, 179, 90, 0.15); color: var(--amber); font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold;">সক্রিয়</span>
                         </div>
-                        <h2 style="font-size: 1.8rem; color: #1f2937; margin: 5px 0; font-weight: 700;">
+                        <h2 style="font-size: 1.8rem; color: var(--text); margin: 5px 0; font-weight: 700;">
                             {{ p.price|money }}
                         </h2>
-                        <div style="margin: 12px 0; font-size: 0.9rem; color: #4b5563; line-height: 1.6;">
+                        <div style="margin: 12px 0; font-size: 0.9rem; color: var(--muted); line-height: 1.6;">
                             <div><b>অগ্রগতি:</b> দিন {{ current_day(p)|bn }} / {{ project_days|bn }}</div>
                             <div><b>মেয়াদ শেষ:</b> {{ p.ends_at.strftime("%d-%m-%Y") }}</div>
                         </div>
                     </div>
-                    <div style="margin-top: 15px; border-top: 1px solid #f3f4f6; pt: 12px;">
-                        <a href="{{ url_for('tasks', purchase=p.id) }}" class="btn small" style="width: 100%; text-align: center; display: block; background: #f59e0b; border-color: #f59e0b; color: #fff;">
+                    <div style="margin-top: 15px; border-top: 1px solid var(--line); pt: 12px;">
+                        <a href="{{ url_for('tasks', purchase=p.id) }}" class="btn small" style="width: 100%; text-align: center; display: block; background: var(--amber); border-color: var(--amber); color: #1a1204;">
                             আজকের কাজ করুন →
                         </a>
                     </div>
@@ -72,15 +80,78 @@
             {% endfor %}
         {% else %}
             <!-- Empty State Div Card -->
-            <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 35px 20px; border-left: 4px solid #9ca3af;">
+            <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 35px 20px; border-left: 4px solid var(--muted);">
                 <span class="muted" style="font-size: 1rem; display: block; margin-bottom: 10px;">আপনার কোনো সক্রিয় প্রজেক্ট নেই</span>
-                <p style="color: #6b7280; margin-bottom: 15px; font-size: 0.9rem;">কাজ শুরু করতে এখনই আপনার পছন্দের প্রজেক্ট প্যাকেজটি কিনুন।</p>
+                <p style="color: var(--muted); margin-bottom: 15px; font-size: 0.9rem;">কাজ শুরু করতে এখনই আপনার পছন্দের প্রজেক্ট প্যাকেজটি কিনুন।</p>
                 <a href="{{ url_for('buy') }}" class="btn small" style="display: inline-block;">
                     প্রজেক্ট কিনতে ক্লিক করুন →
                 </a>
             </div>
         {% endif %}
 
+    </div>
+
+    <!-- Referral Section -->
+    <div class="sectionhead" id="referral">
+        <h2>রেফারেল প্রোগ্রাম (Referral)</h2>
+    </div>
+
+    <div class="refbox">
+        <div>
+            <span class="eyebrow">INVITE &amp; EARN</span>
+            <h3>প্রতি রেফারে {{ referral_bonus|money }} বোনাস</h3>
+            <p class="muted">আপনার লিংক বা কোড দিয়ে কেউ সাইন আপ করলেই বোনাস আপনার ওয়ালেটে যোগ হবে। কতজনকে রেফার করতে পারবেন তার কোনো সীমা নেই।</p>
+        </div>
+
+        <div>
+            <label class="reflabel" for="refLink">আপনার রেফারেল লিংক</label>
+            <div class="refcopy">
+                <input id="refLink" class="input" type="text" value="{{ referral_link }}" readonly>
+                <button type="button" class="btn" id="copyRefLink">কপি</button>
+            </div>
+            <div class="refcode-row">
+                <span class="muted">রেফারেল কোড:</span>
+                <code>{{ current_user.referral_code }}</code>
+            </div>
+        </div>
+
+        <div class="refstats">
+            <div class="refstat count">
+                <span>মোট রেফার</span>
+                <strong>{{ referral_count|bn }} জন</strong>
+            </div>
+            <div class="refstat">
+                <span>রেফারেল থেকে মোট আয়</span>
+                <strong>{{ referral_earnings|money }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="tablewrap" style="margin-bottom: 35px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>ইউজার</th>
+                    <th>সাইন আপের তারিখ</th>
+                    <th>বোনাস</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in referrals %}
+                    <tr>
+                        <td><b>{{ r.username }}</b></td>
+                        <td>{{ r.created_at.strftime("%d-%m-%Y") }}</td>
+                        <td style="color: var(--green);"><b>+{{ referral_bonus|money }}</b></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--muted);">
+                            এখনো কেউ আপনার রেফারেলে সাইন আপ করেনি।
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     <!-- Withdraw History Section -->
@@ -108,17 +179,17 @@
                         <td><b>{{ p.amount|money }}</b></td>
                         <td>
                             {% if p.status == 'paid' %}
-                                <span class="status" style="background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px;">পেমেন্ট সম্পন্ন</span>
+                                <span class="status" style="background: rgba(79, 209, 161, 0.14); color: var(--green); padding: 4px 8px; border-radius: 4px;">পেমেন্ট সম্পন্ন</span>
                             {% elif p.status == 'pending' %}
-                                <span class="status" style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px;">অপেক্ষমাণ</span>
+                                <span class="status" style="background: rgba(240, 179, 90, 0.15); color: var(--amber); padding: 4px 8px; border-radius: 4px;">অপেক্ষমাণ</span>
                             {% else %}
-                                <span class="status" style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px;">বাতিল</span>
+                                <span class="status" style="background: rgba(242, 122, 134, 0.14); color: var(--red); padding: 4px 8px; border-radius: 4px;">বাতিল</span>
                             {% endif %}
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="5" style="text-align: center; color: #888;">
+                        <td colspan="5" style="text-align: center; color: var(--muted);">
                             এখনো কোনো উত্তোলনের হিস্টোরি নেই।
                         </td>
                     </tr>
@@ -158,7 +229,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="3" style="text-align: center; color: #888;">
+                        <td colspan="3" style="text-align: center; color: var(--muted);">
                             এখনো কোনো কাজ জমা নেই।
                         </td>
                     </tr>
@@ -166,5 +237,27 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        (function () {
+            var btn = document.getElementById('copyRefLink');
+            var input = document.getElementById('refLink');
+            if (!btn || !input) return;
+            btn.addEventListener('click', function () {
+                input.select();
+                var done = function () {
+                    btn.textContent = 'কপি হয়েছে ✓';
+                    setTimeout(function () { btn.textContent = 'কপি'; }, 2000);
+                };
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(input.value).then(done, function () {
+                        document.execCommand('copy'); done();
+                    });
+                } else {
+                    document.execCommand('copy'); done();
+                }
+            });
+        })();
+    </script>
 
 {% endblock %}
