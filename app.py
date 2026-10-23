@@ -152,7 +152,7 @@ class PurchaseForm(FlaskForm):
         choices=[(price, f"৳{int(price):,} প্যাকেজ") for price in PROJECT_PACKAGES],
         validators=[DataRequired()]
     )
-    method = SelectField("পেমেন্ট মাধ্যম", choices=[("bKash","bKash"),("Nagad","Nagad"),("Rocket","Rocket"),("Upay","Upay")], validators=[DataRequired()])
+    method = SelectField("পেমেন্ট মাধ্যম", choices=[("bKash","bKash"),("Rocket","Rocket")], validators=[DataRequired()])
     reference = StringField("Transaction ID / রেফারেন্স", validators=[DataRequired(), Length(min=4, max=120)])
     submit = SubmitField("কেনার অনুরোধ দিন")
 
@@ -167,7 +167,7 @@ class ReviewForm(FlaskForm):
 
 class PayoutForm(FlaskForm):
     amount = StringField("টাকার পরিমাণ", validators=[DataRequired(), Length(max=20)])
-    method = SelectField("মাধ্যম", choices=[("bKash","bKash"),("Nagad","Nagad"),("Rocket","Rocket")], validators=[DataRequired()])
+    method = SelectField("মাধ্যম", choices=[("bKash","bKash"),("Rocket","Rocket")], validators=[DataRequired()])
     account_number = StringField("পেমেন্ট নম্বর", validators=[DataRequired(), Length(min=8, max=20)])
     submit = SubmitField("উত্তোলনের অনুরোধ")
 
