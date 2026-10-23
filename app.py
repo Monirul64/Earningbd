@@ -157,7 +157,7 @@ class PurchaseForm(FlaskForm):
     submit = SubmitField("কেনার অনুরোধ দিন")
 
 class ProofForm(FlaskForm):
-    proof = TextAreaField("উত্তর দিন", validators=[DataRequired(), Length(min=4, max=2500)])
+    proof = TextAreaField("উত্তর দিন", validators=[DataRequired(), Length(min=1, max=2500)])
     submit = SubmitField("কাজ জমা দিন")
 
 class ReviewForm(FlaskForm):
